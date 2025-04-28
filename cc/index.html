@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta name="google-signin-scope" content="profile email">
+	<meta name="google-signin-client_id" content="57793548011-58tij0c4s37h2rkvjqslsk36u4u1clh3.apps.googleusercontent.com">
+	<meta property="og:image" content="https://conflictchamber.com/img/emblem160.png">
+	<link rel="img_src" href="https://conflictchamber.com/img/emblem160.png">
+
+	<title>Conflict Chamber | Main</title>
+	<link rel="icon" type="image/png" href="img/favicon.png">
+	<link href='https://fonts.googleapis.com/css?family=Pragati+Narrow' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'> 
+	<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Catamaran' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Fira+Sans' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href='ccmain.css?CC_VER' rel='stylesheet' type='text/css' media='screen, projection'>
+	<link href='cc.css?CC_VER' rel='stylesheet' type='text/css' media='screen, projection'>
+	<link href='cc_print.css?CC_VER' rel='stylesheet' type='text/css' media='print'>
+
+	
+<script type="text/javascript">
+    var require = {
+        waitSeconds: 15,		
+        urlArgs : "bust=CC_VER",
+        deps : ['cc/ccmain', 'cc/g']
+    };
+</script>
+
+
+<script type='text/javascript' src='https://ko-fi.com/widgets/widget_2.js'></script>
+
+<script src="require.js"></script>
+<script type="text/javascript" src="cc/fb.js"></script>
+</head>
+
+<body onload="require(['cc/ccmain'], function(cc) { cc.loadBody();});">
+
+<script type="text/javascript">
+
+function setDarkTheme() {
+	document.body.style.setProperty("--card-bg", "#263238");
+	document.body.style.setProperty("--card-textcolor", "#ECEFF1");
+	document.body.style.setProperty("--subheader-top-border-color", "#222222");
+	document.body.style.setProperty("--subheader-bg", "#37474F");
+	document.body.style.setProperty("--icon-background", "#CFD8DC");
+	document.body.style.setProperty("--icon-foreground", "#0D47A1");
+	document.body.style.setProperty("--flow-background", "#455A64");
+	document.body.style.setProperty("--link-color", "#3f8de0");
+	document.body.style.setProperty("--theme-brightness-filter", "brightness(100%)");
+	//document.body.style.setProperty("--body-font", "Catamaran");
+	document.body.style.backgroundColor = "#282931";
+}
+
+function setLightTheme() {
+	document.body.style.setProperty("--card-bg", "#f2f2f2");
+	document.body.style.setProperty("--card-textcolor", "#000000");
+	document.body.style.setProperty("--subheader-top-border-color", "#cccccc");
+	document.body.style.setProperty("--subheader-bg", "#e6e6e6");
+	document.body.style.setProperty("--icon-background", "#095fb8");
+	document.body.style.setProperty("--icon-foreground", "#ffffff");
+	document.body.style.setProperty("--flow-background", "#b0bec5");
+	document.body.style.setProperty("--link-color", "#095fb8");
+	document.body.style.setProperty("--theme-brightness-filter", "brightness(70%)");
+	//document.body.style.setProperty("--body-font", "Fira Sans");
+	document.body.style.backgroundColor = "#888888";
+}
+
+let themeClass = localStorage.getItem("cctheme");
+
+if( themeClass == "dark") {
+	setDarkTheme();
+	//document.body.className = "cc" + themeClass;
+}
+else {
+	setLightTheme();
+}
+
+</script>
+
+	<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=1825213381039783";
+	//js.src = "//connect.facebook.net/en_US/sdk/debug.js#xfbml=1&version=v2.8&appId=1825213381039783";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+<script type='text/javascript'>
+	kofiwidget2.init('Support Me on Ko-fi', 
+		//'#3f8de0', 
+		null,
+		'E1E2EZH5');
+	window.kofihtml = kofiwidget2.getHTML();
+</script> 
+
+
+	<!-- <div id="cctopextra" class="conflictchamber" style="display: none;"></div> -->
+	<div id="cctop" class="conflictchamber" style="display: none;">
+		<div id="cctitlemenu">
+			<!-- <div id="ccbolt"></div> -->
+			<div id="ccgearsbutton" class="ccgears"></div>
+			<div id="cctitle">Conflict Chamber</div>
+			<div id="ccmenubutton" class="ccmenu"><i class="material-icons">menu</i></div>
+
+			<!-- <div class="mmsep"></div>
+			<div class="chbut tth" id="newsbut"><span class="ttt">News</span></div>
+			<div class="chbut tth" id="editbut"><span class="ttt">List edtior</span></div>
+			<div class="chbut tth" id="tournbut"><span class="ttt">Tournaments</span></div>
+			<div class="mmsep"></div>
+
+			<div id="baruserholder">
+			</div>			 -->
+		</div>
+	</div>
+
+	<div id="emblemmenu" style="display: none;" class="conflictchamber">
+		<div id="emblem"></div>
+		<div id="emblemuserholder">
+			<div id="userpanel">
+				<div id="loginholder">
+					<div id="loginblurb">Sign in to access list storage and register for open-registration events</div>
+					<div id="my-signin2"></div>
+					<div class="ccfb fb-login-button" data-scope="public_profile,email" data-max-rows="1" data-size="large" data-show-faces="false"
+						data-auto-logout-link="false"></div>
+
+				</div>
+
+				<div id="userDetails" style="display: none;">
+					<div id="loginicon"></div>
+					<div id="userpicholder"><img id="userPic"></div>
+					<div id="loginoptions">
+						<!-- <div class="chbut tth" id="openbut"><span class="ttt">Open list</span></div>
+						<div class="chbut tth" id="savebut"><span class="ttt">Save list</span></div>
+						<div class="chbut tth" id="quitbut"><span class="ttt">Log out</span></div> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- <div id="blog" style="display: none;"></div>
+	<div id="tournaments" class="conflictchamber" style="display: none;"></div> -->
+	<!-- <div id="tournament_submission" class="conflictchamber" style="display: none;"></div> -->
+	<!-- <div id="team_listing" class="conflictchamber mainlisting" style="display: none;"></div> -->
+	<div id="printout" class="conflictchamber"></div>
+
+
+	<div class="conflictchamber">
+		<div id="helpDialog" class="dlg" style="display: none;" onclick="document.getElementById('helpDialog').style.display = 'none';">
+			<div id="helpInner" class="di2">
+				<p>Bugs and other feedback can be sent <a href="mailto:anon@conflictchamber.com">here</a>; for issues not relating to bad
+					card data, please include your browser, its version, and the operating system you're running it on. Conflict Chamber
+					is developed primarily in Chrome and Firefox for the Windows and Linux platforms. Click anywhere on the screen to close
+					this dialog.</p>
+
+				<table>
+					<tr>
+						<td><span class="hicon">&#xe967;, &#xe968;</span></td>
+						<td><b>Undo</b> [ctrl-z], <b>Redo</b> [ctrl-y]: Undo the most recent edit or redo the most recent undo.</td>
+					</tr>
+					<tr>
+						<td style="padding-top: 10px;"><span class="hicon" style="color: darkred">&#xea0f;</span></td>
+						<td><b>Clear list</b>: Delete the current list. If done on accident, this can be undone.</td>
+					</tr>
+					<tr>
+						<td><span class="hicon">&#xe90d;</span></td>
+						<td><b>Save as image</b>: Save and download the current army list as a PNG image. Note: known to not work on Microsft Edge
+							or Microsoft Internet Explorer.</td>
+					</tr>
+					<tr>
+						<td><span class="hicon">&#xe92d;</span></td>
+						<td><b>Copy to clipboard</b>: Copy a plain-text version of the current army list to the clipboard.</td>
+					</tr>
+					<tr>
+						<td><span class="hicon">&#xe9cb;</span></td>
+						<td><b>Permanent link</b>: Provides a permanent link to the current army list that can be posted elsewhere; on most browsers,
+							right-click and "Copy link address" to copy it to the clipboard.</td>
+					</tr>
+					<tr>
+						<td><span class="hicon">&#xea13;</span></td>
+						<td><b>Exit to main</b>: Abandon the current list and return to the main menu. Cannot be undone.</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div id="fadeMessage" style="display: none;"></div>
+</body>
+
+</html>

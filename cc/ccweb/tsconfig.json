@@ -1,0 +1,15 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "noImplicitAny": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "target": "es6",
+        "outFile": "ccweb.js",
+        "sourceMap": true,
+        "module": "amd"
+    },
+    "files": [
+        "ccweb.ts"
+    ]
+}

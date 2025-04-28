@@ -1,0 +1,13 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+	"outDir": "../../node/lib",
+	"module": "commonjs",
+	"declaration": true,
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "target": "es6",
+        "sourceMap": true
+    }
+}

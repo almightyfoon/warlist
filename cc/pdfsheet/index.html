@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+
+<head>
+<title>Blah</title>
+
+<script type="text/javascript" src="pdfkit.js"></script>
+<script type="text/javascript" src="source.js"></script>
+<script type="text/javascript" src="blob-stream.js"></script>
+
+<script>
+
+
+
+function loadBody() {
+
+    window.fetch("logo.svg")
+        .then(response => response.text())
+        .then(svg => gotSVG(svg));
+
+    window.fetch("GearedSlab.ttf")
+        .then(response => response.arrayBuffer())
+        .then(font => gotFont(font));
+}
+
+let svgText = null;    
+
+function gotSVG(svg) {
+    svgText = svg;
+
+    if( fontData ) {
+        continueSheet();
+    }
+}
+
+let fontData = null;
+
+function gotFont(font) {
+    fontData = font;
+
+    if( svgText ) {
+        continueSheet();
+    }
+}
+
+function continueSheet() {
+
+
+
+let doc = new PDFDocument({
+    size: "letter",
+    layout: "portrait",
+    margin: 50
+});
+
+doc.font(fontData);
+
+//console.log(font);
+//doc.font(font);
+
+let stream = doc.pipe(blobStream());
+
+// doc.roundedRect(40, 45, 200, 200, 10);
+
+// doc.moveTo(200, 200)
+//     .lineWidth(25)
+//     .lineCap("round")
+//     .lineTo(400, 200)
+//     .stroke();
+
+// doc.moveTo(200,200)
+//     .lineWidth(2)
+//     .lineCap("round")
+//     .lineTo(200, 400)
+//     .lineTo(400, 400)
+//     .lineTo(400, 200)
+//     .stroke();
+
+// border?
+
+doc.moveTo(10, 10)
+    .lineTo(602, 10)
+    .lineTo(602, 782)
+    .lineTo(10, 782)
+    .lineTo(10, 10)
+    .stroke();
+
+let initialX = 130;
+let initialY = 30;
+
+let x = initialX;
+let y = initialY;
+
+let lineHeight = 12;
+let lineWidth = 300;
+let radius = 4;
+let headerFactor = 1.5;
+
+
+// First row
+
+doc.moveTo(x, y + radius)
+    .quadraticCurveTo(x, y, x + radius, y)
+    .lineTo(x + lineWidth - radius, y)
+    .quadraticCurveTo(x + lineWidth, y, x + lineWidth, y + radius)
+    .lineTo(x + lineWidth, y + lineHeight * headerFactor)
+    .lineTo(x, y + lineHeight * headerFactor)
+    .lineTo(x, y + radius)
+    .lineWidth(0.5)
+    .fillAndStroke("black", "black");
+
+y += lineHeight * headerFactor;
+
+let rowCount = 4;
+
+for( let i = 0; i < rowCount; i++ ) {
+
+    doc.moveTo(x, y)
+        .lineTo(x + lineWidth, y)
+        .lineTo(x + lineWidth, y + lineHeight)
+        .lineTo(x, y + lineHeight)
+        .lineTo(x, y)
+        .lineWidth(0.5)
+        .fillAndStroke(i % 2 == 0 ? "white" : "#dddddd", "black");
+
+    y = y + lineHeight;
+}
+
+
+
+doc.lineWidth(2)
+    .fillColor("white")
+    .font("GearedSlab-Regular")
+    .fontSize(16)
+    .text("Hello!", initialX, initialY + 2, {
+        width: lineWidth,
+        align: "center"
+    });
+
+
+
+SVGtoPDF(doc, svgText, 20, 20, {
+    width: 100,
+    height: 100
+});
+
+
+
+
+
+
+doc.end();
+
+stream.on("finish", () => {
+    let blob = stream.toBlob("application/pdf");
+    let url = stream.toBlobURL("application/pdf");
+
+    document.getElementById("pdfiframe").src = url;
+});
+
+
+
+console.log("Done");
+
+}
+</script>
+
+</head>
+
+<body onload="loadBody();">
+
+    <iframe id="pdfiframe" style="border: 1px solid black; width: 800px; height: 800px;"></iframe>
+</body>
+
+</html>
