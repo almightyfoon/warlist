@@ -3,6 +3,8 @@ import { Const, ThemeData, entityFilter } from "./defines";
 import { Entry, isUnit, isAttachment, isSolo,
     isWarnoun, isWarbeast, isCaster, hasKeyword, isCommandAttachment, isStructure,
     isAmphibious, isCharacter, isLiving, isUndead, isConstruct } from "./entry";
+import { safeGetCostArray } from './utils';
+
 
     const Cygnar : number = 1;
     const Menoth : number = 2;
@@ -78,13 +80,18 @@ function themeUnique(tid : number) : entityFilter {
   };
 }
 
-function costAtMost(cost : number) : entityFilter {
+function costAtMost(cost: number): entityFilter {
   let myCost = cost;
 
   return (e: Entry) => {
-    return e.C[0] <= myCost;
-  }
+    const costArray = safeGetCostArray(e, "costAtMost");
+    if (!costArray) {
+      return false; // If no cost array, treat as not matching
+    }
+    return costArray[0] <= myCost;
+  };
 }
+
 
 function isWarjack(e : Entry) : boolean {
   return e.t == Warjack;
@@ -254,29 +261,35 @@ function sizeOrSmaller(size : number) : entityFilter {
   };
 }
 
-function costOrLess(cost : number) : entityFilter {
-	let myCost : number = cost;
+function costOrLess(cost: number): entityFilter {
+    const myCost: number = cost;
 
-	return (e : Entry) => {
-		return e.C.length == 1 && e.C[0] <= myCost;
-	};
+    return (e: Entry) => {
+        const costArray = safeGetCostArray(e, "costOrLess");
+
+        if (!costArray) {
+            return false; // No valid cost array, don't match
+        }
+
+        return costArray.length === 1 && costArray[0] <= myCost;
+    };
 }
 
-function factionSoloCostOrLess(fid : number, cost : number) : entityFilter {
-	let myFaction : number = fid;
-	let myCost : number = cost;
 
 
-	return (e : Entry) => {
-		return (e.fid == myFaction || e.part == myFaction)
-			&& isSolo(e)
-			&& e.C.length == 1
-			&& e.C[0] <= myCost
-			;
+function factionSoloCostOrLess(fid: number, cost: number): entityFilter {
+  let myFaction: number = fid;
+  let myCost: number = cost;
 
-	};
-}
-  
+  return (e: Entry) => {
+      const costArray = safeGetCostArray(e, "factionSoloCostOrLess");
+      if (!costArray) return false;
+
+      return (e.fid === myFaction || e.part === myFaction)
+          && isSolo(e)
+          && costArray[0] <= myCost;
+  };
+} 
 
 function nonCaster(e : Entry ) : boolean {
   return !isCaster(e);
@@ -6056,7 +6069,17 @@ export function themeStaticData() : { [n: number]: ThemeData } {
           [ Const.CoC, isBattleEngine ],
         ],
         rewards: [
-          (e : Entry) => isWarjack(e) && e.C[0] <= 5,
+          (e: Entry) => {
+            if (!isWarjack(e)) {
+              return false;
+            }
+            const costArray = safeGetCostArray(e, "Strange Bedfellows reward");
+            if (!costArray) {
+              return false;
+            }
+            return costArray[0] <= 5;
+          },
+          
           [isSolo, sizeOrSmaller(Medium), costOrLess(5)], 
         ],
         tb: [
@@ -6087,7 +6110,16 @@ export function themeStaticData() : { [n: number]: ThemeData } {
           [ Const.CoC, isBattleEngine ]
         ],
         rewards: [
-          (e : Entry) => isWarjack(e) && e.C[0] <= 5,
+          (e: Entry) => {
+            if (!isWarjack(e)) {
+              return false;
+            }
+            const costArray = safeGetCostArray(e, "Strange Bedfellows reward");
+            if (!costArray) {
+              return false;
+            }
+            return costArray[0] <= 5;
+          },
           [isSolo, sizeOrSmaller(Medium), costOrLess(5)],
         ],
         tb: [

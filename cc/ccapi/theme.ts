@@ -185,7 +185,7 @@ export class Theme {
         return checkThemeReward(this.themeData, e, choice);
     }
 
-    isFreebie(e : Entry, choice : number) : boolean {
+    isFreebie(e : Entry, choice? : number) : boolean {
         return checkThemeReward(this.themeData, e, choice) >= 0;
     }
 

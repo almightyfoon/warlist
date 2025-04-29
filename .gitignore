@@ -1,0 +1,8 @@
+*package-lock.json
+*/*/package.json
+*.js*
+*/node_modules
+node_modules
+*.tsbuildinfo
+tests/report.html
+*/lib
