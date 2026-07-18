@@ -1,4 +1,5 @@
 import * as ccweb from "../ccweb/ccweb";
+import { CC_VERSION } from "../ccapi/version";
 
 export class MainFlow extends ccweb.Flow {
 
@@ -9,7 +10,7 @@ export class MainFlow extends ccweb.Flow {
             <div class="cctitle"></div>
             <div class="titlefade">&nbsp;Warlist</div>
 
-            <div id="versioninfo">Build CC_VER</div>
+            <div id="versioninfo">Build ${CC_VERSION}</div>
 
             <div id="abovefold">
                 <div class="uicard ccdisclaimer">

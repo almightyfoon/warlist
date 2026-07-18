@@ -33,7 +33,9 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       PORT: 8080
       STATIC_DIR: /app/static
-      APP_VERSION: ${APP_VERSION:-dev}
+      # APP_VERSION intentionally not set here -- it's baked into the image
+      # at build time (Dockerfile ARG) so the backend's index.html
+      # substitution and the frontend's Vite-bundled version always match.
     volumes:
       # Bind-mount for card data updates: sync from S3, then restart backend.
       # On first deploy, directory is seeded from image defaults by the entrypoint.

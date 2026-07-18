@@ -26,7 +26,7 @@ func Load() (*Config, error) {
 		DBPassword:     os.Getenv("DB_PASSWORD"),
 		DBName:         getenv("DB_NAME", "warlist"),
 		GoogleClientID: os.Getenv("GOOGLE_CLIENT_ID"),
-		AllowedOrigin:  getenv("ALLOWED_ORIGIN", "https://warlist.online"),
+		AllowedOrigin:  getenv("ALLOWED_ORIGIN", "https://www.warlist.online"),
 		Port:           getenv("PORT", "8080"),
 		StaticDir:      getenv("STATIC_DIR", "./static"),
 		AppVersion:     getenv("APP_VERSION", "dev"),

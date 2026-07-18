@@ -2925,7 +2925,7 @@ div.eventteamtitle
     width: calc(100%);
     height: 80px;
     background-color: black;
-    background: url(img/ccmain.jpg);
+    background: url(/img/ccmain.jpg);
 }
 
 .uimobileflow .cctitle 
@@ -3007,7 +3007,7 @@ div.ccdisclaimer
 {
     width: 160px;
     height: 160px;
-    background: url(img/emblem160.png);
+    background: url(/img/emblem160.png);
     cursor: pointer;
 }
 
