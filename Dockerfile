@@ -12,7 +12,7 @@ RUN cd cc && npx vite build
 
 
 # Stage 2: Compile Go backend
-FROM golang:1.22-alpine AS backend
+FROM golang:1.26-alpine AS backend
 
 WORKDIR /src
 
@@ -25,7 +25,7 @@ RUN CGO_ENABLED=0 GOFLAGS=-mod=mod \
 
 
 # Stage 3: Runtime image
-FROM alpine:3.20
+FROM alpine:3.24
 
 RUN apk --no-cache add ca-certificates tzdata
 
