@@ -1,0 +1,19 @@
+name: Feature request
+description: Suggest something for the builder, or a roadmap item.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What do you want to be able to do
+      description: Describe the feature or change.
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why
+      description: What's the use case, or what's painful without it?
+    validations:
+      required: false

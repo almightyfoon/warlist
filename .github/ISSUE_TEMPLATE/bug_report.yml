@@ -1,0 +1,34 @@
+name: Bug report
+description: Something in the builder isn't working right.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What's wrong
+      description: What did you expect to happen, and what happened instead?
+      placeholder: |
+        e.g. Adding a second weapon attachment to Winter Korps Infantry doesn't work,
+        even though the card allows two.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Army, leader, cards involved, and what you clicked.
+      placeholder: |
+        1. Start a list with army X, leader Y
+        2. Add card Z
+        3. ...
+    validations:
+      required: true
+
+  - type: input
+    id: list-link
+    attributes:
+      label: List link (optional)
+      description: If this happened on a saved/shared list, paste the URL.
+    validations:
+      required: false
