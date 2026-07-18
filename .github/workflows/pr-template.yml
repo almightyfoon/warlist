@@ -9,8 +9,12 @@ jobs:
   check-description:
     name: Check PR description
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Verify template sections are filled out
         env:
