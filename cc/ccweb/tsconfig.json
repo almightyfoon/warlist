@@ -1,13 +1,14 @@
 {
-    "compileOnSave": true,
     "compilerOptions": {
         "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
         "target": "es6",
-        "outFile": "ccweb.js",
-        "sourceMap": true,
-        "module": "amd"
+        "lib": ["es2019", "dom"],
+        "rootDir": "..",
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "strictNullChecks": false
     },
     "files": [
         "ccweb.ts"

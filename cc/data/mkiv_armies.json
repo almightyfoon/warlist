@@ -1,0 +1,882 @@
+[
+  {
+    "id": "a1",
+    "name": "5th Division",
+    "factionId": "f10",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k7"
+    ],
+    "includedKeywords": [
+      "5th Division"
+    ]
+  },
+  {
+    "id": "a2",
+    "name": "Armored Korps",
+    "factionId": "f10",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k23"
+    ],
+    "includedKeywords": [
+      "Armored Korps"
+    ]
+  },
+  {
+    "id": "a3",
+    "name": "Army of the Western Reaches",
+    "factionId": "f17",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k24"
+    ],
+    "includedKeywords": [
+      "Army of the Western Reaches"
+    ]
+  },
+  {
+    "id": "a4",
+    "name": "Blackfleet",
+    "factionId": "f4",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k25"
+    ],
+    "includedKeywords": [
+      "Blackfleet"
+    ]
+  },
+  {
+    "id": "a5",
+    "name": "Blindwater Congregation",
+    "factionId": "f13",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k26"
+    ],
+    "includedKeywords": [
+      "Blindwater Congregation"
+    ]
+  },
+  {
+    "id": "a6",
+    "name": "Brineblood Marauders",
+    "factionId": "f18",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c907",
+      "c913",
+      "c1002",
+      "c1011",
+      "c989",
+      "c959",
+      "c975",
+      "c997",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k27",
+      "k28",
+      "k29"
+    ],
+    "includedKeywords": [
+      "Brineblood Marauders",
+      "Fire Tongue Cadre",
+      "Foulblood's Armada"
+    ]
+  },
+  {
+    "id": "a7",
+    "name": "Convergence of Cyriss",
+    "factionId": "f2",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c959",
+      "c1004",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k36"
+    ],
+    "includedKeywords": [
+      "Convergence"
+    ]
+  },
+  {
+    "id": "a8",
+    "name": "Crucible Guard",
+    "factionId": "f3",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c975",
+      "c959",
+      "c1004",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k37"
+    ],
+    "includedKeywords": [
+      "Crucible Guard"
+    ]
+  },
+  {
+    "id": "a9",
+    "name": "Dark Host",
+    "factionId": "f4",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k44"
+    ],
+    "includedKeywords": [
+      "Dark Host"
+    ]
+  },
+  {
+    "id": "a10",
+    "name": "Dark Operations",
+    "factionId": "f13",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c975",
+      "c959",
+      "c1004",
+      "c1662",
+      "c1674"
+    ],
+    "excludedCardIds": [
+      "c262"
+    ],
+    "includedKeywordsIds": [
+      "k45",
+      "k46"
+    ],
+    "includedKeywords": [
+      "Hive Mind Cadre",
+      "Dark Operations"
+    ]
+  },
+  {
+    "id": "a11",
+    "name": "Devourer's Host",
+    "factionId": "f1",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k49"
+    ],
+    "includedKeywords": [
+      "Devourer's Host"
+    ]
+  },
+  {
+    "id": "a12",
+    "name": "Dragon's Host",
+    "factionId": "f12",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k50"
+    ],
+    "includedKeywords": [
+      "Dragon's Host"
+    ]
+  },
+  {
+    "id": "a13",
+    "name": "Exalted",
+    "factionId": "f17",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k51"
+    ],
+    "includedKeywords": [
+      "Exalted"
+    ]
+  },
+  {
+    "id": "a14",
+    "name": "Fane of Nyrro",
+    "factionId": "f6",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c975",
+      "c959",
+      "c1674"
+    ],
+    "excludedCardIds": [
+      "c511",
+      "c513",
+      "c526"
+    ],
+    "includedKeywordsIds": [
+      "k52"
+    ],
+    "includedKeywords": [
+      "Fane of Nyrro"
+    ]
+  },
+  {
+    "id": "a15",
+    "name": "Final Interdiction",
+    "factionId": "f15",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k56"
+    ],
+    "includedKeywords": [
+      "Final Interdiction"
+    ]
+  },
+  {
+    "id": "a16",
+    "name": "First Army",
+    "factionId": "f5",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k41"
+    ],
+    "includedKeywords": [
+      "First Army"
+    ]
+  },
+  {
+    "id": "a17",
+    "name": "Gravediggers",
+    "factionId": "f5",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c939",
+      "c989",
+      "c959",
+      "c1004",
+      "c975",
+      "c974",
+      "c149",
+      "c971",
+      "c908",
+      "c914",
+      "c1674"
+    ],
+    "excludedCardIds": [
+      "c332",
+      "c362",
+      "c350"
+    ],
+    "includedKeywordsIds": [
+      "k57",
+      "k58",
+      "k59"
+    ],
+    "includedKeywords": [
+      "Gravediggers",
+      "Storm Forge Cadre",
+      "Hellslinger Cadre"
+    ],
+    "commandCardLimit": 8
+  },
+  {
+    "id": "a18",
+    "name": "Grymkin",
+    "factionId": "f8",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c959",
+      "c1004",
+      "c975",
+      "c1055",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k65"
+    ],
+    "includedKeywords": [
+      "Grymkin"
+    ],
+    "commandCardLimit": 7
+  },
+  {
+    "id": "a19",
+    "name": "House Kallyss",
+    "factionId": "f6",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c974",
+      "c1008",
+      "c1015",
+      "c915",
+      "c909",
+      "c1004",
+      "c959",
+      "c997",
+      "c975",
+      "c149",
+      "c939",
+      "c1674",
+      "c1676"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k55",
+      "k66"
+    ],
+    "includedKeywords": [
+      "House Kallyss",
+      "Ghosts of Ios"
+    ]
+  },
+  {
+    "id": "a21",
+    "name": "Infernals",
+    "factionId": "f9",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k61"
+    ],
+    "includedKeywords": [
+      "Infernals"
+    ]
+  },
+  {
+    "id": "a22",
+    "name": "Kithguard",
+    "factionId": "f18",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c959",
+      "c1004",
+      "c975",
+      "c971",
+      "c989",
+      "c997",
+      "c1011",
+      "c939",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k67",
+      "k28"
+    ],
+    "includedKeywords": [
+      "Kithguard",
+      "Fire Tongue Cadre"
+    ]
+  },
+  {
+    "id": "a23",
+    "name": "Legions of Dawn",
+    "factionId": "f16",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k68"
+    ],
+    "includedKeywords": [
+      "Legions of Dawn"
+    ]
+  },
+  {
+    "id": "a24",
+    "name": "Necrofactorium",
+    "factionId": "f4",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c959",
+      "c1004",
+      "c1008",
+      "c975",
+      "c149",
+      "c1662",
+      "c1674",
+      "c1676"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k77",
+      "k45"
+    ],
+    "includedKeywords": [
+      "Necrofactorium",
+      "Hive Mind Cadre"
+    ]
+  },
+  {
+    "id": "a25",
+    "name": "Old Umbrey",
+    "factionId": "f10",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c975",
+      "c959",
+      "c1004",
+      "c1055",
+      "c643",
+      "c939",
+      "c996",
+      "c1674"
+    ],
+    "excludedCardIds": [
+      "c722",
+      "c769"
+    ],
+    "includedKeywordsIds": [
+      "k78",
+      "k81"
+    ],
+    "includedKeywords": [
+      "Old Umbrey",
+      "SKS-6 Cadre"
+    ]
+  },
+  {
+    "id": "a26",
+    "name": "Ravens of War",
+    "factionId": "f12",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k82"
+    ],
+    "includedKeywords": [
+      "Ravens of War"
+    ]
+  },
+  {
+    "id": "a27",
+    "name": "Reaper Covenant",
+    "factionId": "f14",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c945",
+      "c1004",
+      "c959",
+      "c975",
+      "c1662",
+      "c1674",
+      "c1676"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k83",
+      "k84"
+    ],
+    "includedKeywords": [
+      "Reaper Covenant",
+      "Graveborn"
+    ]
+  },
+  {
+    "id": "a28",
+    "name": "Rhul Guard",
+    "factionId": "f13",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k86"
+    ],
+    "includedKeywords": [
+      "Rhul Guard"
+    ]
+  },
+  {
+    "id": "a29",
+    "name": "Sea Raiders",
+    "factionId": "f14",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c971",
+      "c1008",
+      "c996",
+      "c916",
+      "c910",
+      "c1004",
+      "c959",
+      "c975",
+      "c1662",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k87",
+      "k88",
+      "k84"
+    ],
+    "includedKeywords": [
+      "Sea Raider",
+      "Curse Bound",
+      "Graveborn"
+    ]
+  },
+  {
+    "id": "a30",
+    "name": "Secret Dominion",
+    "factionId": "f1",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k70"
+    ],
+    "includedKeywords": [
+      "Secret Dominion"
+    ]
+  },
+  {
+    "id": "a31",
+    "name": "Shadowflame Shard",
+    "factionId": "f11",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c945",
+      "c1011",
+      "c1055",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k89",
+      "k90",
+      "k91"
+    ],
+    "includedKeywords": [
+      "Shadowflame Shard",
+      "Shard Incarnates Cadre",
+      "Shard Nocturnes"
+    ]
+  },
+  {
+    "id": "a32",
+    "name": "Shadows of the Retribution",
+    "factionId": "f16",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k74"
+    ],
+    "includedKeywords": [
+      "Shadows of the Retribution"
+    ]
+  },
+  {
+    "id": "a33",
+    "name": "Soldiers of Fortune",
+    "factionId": "f13",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c177",
+      "c178",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k20"
+    ],
+    "includedKeywords": [
+      "Soldiers of Fortune"
+    ]
+  },
+  {
+    "id": "a34",
+    "name": "Storm Knights",
+    "factionId": "f5",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k92"
+    ],
+    "includedKeywords": [
+      "Storm Knight"
+    ]
+  },
+  {
+    "id": "a35",
+    "name": "Storm Legion",
+    "factionId": "f5",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c939",
+      "c971",
+      "c974",
+      "c917",
+      "c911",
+      "c1004",
+      "c959",
+      "c997",
+      "c975",
+      "c149",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k93",
+      "k58",
+      "k59"
+    ],
+    "includedKeywords": [
+      "Storm Legion",
+      "Storm Forge Cadre",
+      "Hellslinger Cadre"
+    ]
+  },
+  {
+    "id": "a36",
+    "name": "Storm of the North",
+    "factionId": "f19",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k94"
+    ],
+    "includedKeywords": [
+      "Storm of the North"
+    ]
+  },
+  {
+    "id": "a37",
+    "name": "Talion Charter",
+    "factionId": "f13",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c177",
+      "c178",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k43"
+    ],
+    "includedKeywords": [
+      "Talion Charter"
+    ]
+  },
+  {
+    "id": "a38",
+    "name": "Temple Guardians",
+    "factionId": "f15",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k95"
+    ],
+    "includedKeywords": [
+      "Temple Guardians"
+    ]
+  },
+  {
+    "id": "a39",
+    "name": "Thornfall Alliance",
+    "factionId": "f13",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k14"
+    ],
+    "includedKeywords": [
+      "Thornfall Alliance"
+    ]
+  },
+  {
+    "id": "a40",
+    "name": "United Kriels",
+    "factionId": "f19",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k96"
+    ],
+    "includedKeywords": [
+      "United Kriels"
+    ]
+  },
+  {
+    "id": "a41",
+    "name": "Winter Korps",
+    "factionId": "f10",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c939",
+      "c1015",
+      "c996",
+      "c918",
+      "c912",
+      "c1004",
+      "c959",
+      "c997",
+      "c975",
+      "c149",
+      "c1055",
+      "c1674"
+    ],
+    "excludedCardIds": [
+      "c643"
+    ],
+    "includedKeywordsIds": [
+      "k97",
+      "k81",
+      "k98"
+    ],
+    "includedKeywords": [
+      "Winter Korps",
+      "SKS-6 Cadre",
+      "Annihilator"
+    ]
+  }
+]

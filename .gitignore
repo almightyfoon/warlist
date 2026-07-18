@@ -1,8 +1,23 @@
+# Dependencies
+node_modules/
 *package-lock.json
-*/*/package.json
-*.js*
-*/node_modules
-node_modules
+
+# Build output
 *.tsbuildinfo
-tests/report.html
 */lib
+cc/dist/
+
+# Python tooling (card-data extraction scripts)
+.venv/
+
+# Test artifacts
+tests/report.html
+
+# Env / secrets -- copy .env.example instead
+.env
+
+# OS
+.DS_Store
+
+# Claude local settings
+.claude

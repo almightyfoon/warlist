@@ -1,0 +1,211 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: warlist
+
+jobs:
+  # ── Tests ────────────────────────────────────────────────────────────────────
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            cc/package-lock.json
+
+      - name: Install root deps
+        run: npm ci
+
+      - name: Install frontend deps
+        run: npm ci --ignore-scripts
+        working-directory: cc
+
+      - name: Type-check ccapi
+        run: npx tsc --noEmit
+        working-directory: cc/ccapi
+
+      - name: Type-check cc bundle
+        run: npx tsc --noEmit
+        working-directory: cc/cc
+
+      - name: Type-check ccweb bundle
+        run: npx tsc --noEmit
+        working-directory: cc/ccweb
+
+      - name: Data integrity tests
+        run: node tests/mk4/test.mjs
+
+      - name: List logic tests
+        run: npx tsx tests/mk4/test-list.ts
+
+      - name: Export tests
+        run: npx tsx tests/mk4/test-export.ts
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Go vet
+        run: go vet ./...
+        working-directory: backend
+
+  # ── Build & Deploy ───────────────────────────────────────────────────────────
+  # Runs only on push to main (not PRs). Requires:
+  #   Secrets: AWS_ROLE_ARN, EC2_INSTANCE_ID
+  #
+  # AWS setup (one-time):
+  #   - IAM OIDC provider: token.actions.githubusercontent.com
+  #   - IAM role (AWS_ROLE_ARN) with trust policy for this repo and permissions:
+  #       ecr:GetAuthorizationToken
+  #       ecr:BatchCheckLayerAvailability, ecr:GetDownloadUrlForLayer,
+  #       ecr:BatchGetImage, ecr:InitiateLayerUpload, ecr:UploadLayerPart,
+  #       ecr:CompleteLayerUpload, ecr:PutImage
+  #       ssm:SendCommand, ssm:GetCommandInvocation (scoped to the instance
+  #         ARN and the AWS-RunShellScript document)
+  #   - ECR repository named "warlist"
+  #   - EC2 instance profile with ecr:GetAuthorizationToken +
+  #       ecr:BatchGetImage + ecr:GetDownloadUrlForLayer +
+  #       AmazonSSMManagedInstanceCore (SSM Agent ships preinstalled on AL2023)
+  #
+  # No SSH key pair or open port 22 required — deploy commands run over SSM
+  # Run Command (aws ssm send-command), not ssh/scp.
+  #
+  # EC2 first-run setup:
+  #   sudo mkdir -p /srv/warlist
+  #   sudo chown $USER /srv/warlist
+  #   cp docker-compose.yml Caddyfile /srv/warlist/
+  #   cp .env.example /srv/warlist/.env   # then fill in secrets
+  build-and-deploy:
+    name: Build & Deploy
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build image
+        id: build
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          TAG: ${{ github.sha }}
+        run: |
+          IMAGE="$REGISTRY/$ECR_REPOSITORY:$TAG"
+          docker build -t "$IMAGE" -t "$REGISTRY/$ECR_REPOSITORY:latest" .
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+          echo "registry=$REGISTRY" >> "$GITHUB_OUTPUT"
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ steps.build.outputs.image }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+          ignore-unfixed: true
+
+      - name: Upload Trivy results to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+      - name: Push image to ECR
+        env:
+          REGISTRY: ${{ steps.build.outputs.registry }}
+          TAG: ${{ github.sha }}
+        run: |
+          docker push "$REGISTRY/$ECR_REPOSITORY:$TAG"
+          docker push "$REGISTRY/$ECR_REPOSITORY:latest"
+
+      - name: Deploy via SSM
+        env:
+          REGISTRY: ${{ steps.build.outputs.registry }}
+          IMAGE: ${{ steps.build.outputs.image }}
+          INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
+        run: |
+          COMPOSE_B64=$(base64 -w0 docker-compose.yml)
+          CADDY_B64=$(base64 -w0 Caddyfile)
+
+          cat > /tmp/ssm-params.json << JSON
+          {
+            "commands": [
+              "set -euo pipefail",
+              "mkdir -p /srv/warlist",
+              "echo '$COMPOSE_B64' | base64 -d > /srv/warlist/docker-compose.yml",
+              "echo '$CADDY_B64' | base64 -d > /srv/warlist/Caddyfile",
+              "aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $REGISTRY",
+              "cd /srv/warlist",
+              "sed -i '/^BACKEND_IMAGE=/d' .env",
+              "echo BACKEND_IMAGE=$IMAGE >> .env",
+              "docker compose pull backend",
+              "docker compose up -d --no-build"
+            ]
+          }
+          JSON
+
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --parameters file:///tmp/ssm-params.json \
+            --comment "warlist deploy ${{ github.sha }}" \
+            --query "Command.CommandId" --output text)
+
+          echo "SSM command ID: $COMMAND_ID"
+
+          STATUS="Pending"
+          for i in $(seq 1 60); do
+            STATUS=$(aws ssm get-command-invocation \
+              --command-id "$COMMAND_ID" \
+              --instance-id "$INSTANCE_ID" \
+              --query "Status" --output text 2>/dev/null || echo "Pending")
+            case "$STATUS" in
+              Success|Failed|Cancelled|TimedOut) break ;;
+              *) sleep 5 ;;
+            esac
+          done
+
+          aws ssm get-command-invocation \
+            --command-id "$COMMAND_ID" \
+            --instance-id "$INSTANCE_ID" \
+            --query "StandardOutputContent" --output text
+
+          if [ "$STATUS" != "Success" ]; then
+            echo "::error::SSM deploy command finished with status $STATUS"
+            aws ssm get-command-invocation \
+              --command-id "$COMMAND_ID" \
+              --instance-id "$INSTANCE_ID" \
+              --query "StandardErrorContent" --output text
+            exit 1
+          fi

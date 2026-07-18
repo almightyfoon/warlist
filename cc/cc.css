@@ -1,17 +1,203 @@
+/* =====================================================================
+   DESIGN TOKENS — all theme switches happen via [data-theme] on <html>
+   Do not add hex colours to component CSS; use a token instead.
+   See cc/STYLEGUIDE.md for the full token reference.
+   ===================================================================== */
+
+/* ── Theme-agnostic ─────────────────────────────────────────────────── */
 :root {
-    --main-color:#3f8de0;
-    --dark-color: #095fb8;
-    --card-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-    --card-hover-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-    --subheader-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-    --subheader-hover-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-
+    /* Typography */
+    --font-title:  'Geared Slab', 'Lato', serif;
+    --font-head:   'Lato', sans-serif;
+    --font-body:   'Fira Sans', 'Inter', sans-serif;
+    /* Legacy aliases kept so old component CSS still compiles */
     --header-font: 'Lato';
-    --body-font: 'Fira Sans';
-    --title-font: 'Geared Slab';
-    --topbar-margin: 0px;
+    --body-font:   'Fira Sans';
+    --title-font:  'Geared Slab';
 
-    /* --card-bg: #f2f2f2; */
+    /* Radius */
+    --radius-sm: 3px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+
+    /* Motion */
+    --ease: 0.18s ease;
+
+    /* Layout — topbar is 48 px; everything below pads by this amount */
+    --topbar-margin: 48px;
+
+    /* Legacy shadow tokens (used by old .conflictchamber rules) */
+    --card-shadow:            0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    --card-hover-shadow:      0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    --subheader-shadow:       0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    --subheader-hover-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+/* ── Dark theme (default) ───────────────────────────────────────────── */
+[data-theme="dark"] {
+    /* Surfaces */
+    --bg:            #0e1117;
+    --surface:       #161c2b;
+    --surface-2:     #1e2840;
+    --surface-3:     #26334f;
+    --border:        #2c3a56;
+    --border-soft:   rgba(255,255,255,0.06);
+
+    /* Text */
+    --text:          #dde3f0;
+    --text-2:        #8a9bb5;
+    --text-disabled: #4a5672;
+
+    /* Accent blue */
+    --accent:        #4d9de8;
+    --accent-dark:   #2270c0;
+    --accent-hover:  #6fb4f5;
+    --accent-dim:    rgba(77,157,232,0.14);
+
+    /* Gold (leaders, secondary highlights) */
+    --gold:          #c8941a;
+    --gold-dim:      rgba(200,148,26,0.14);
+
+    /* Topbar — always dark regardless of theme */
+    --topbar:        #0a1320;
+    --topbar-border: #1a2a40;
+
+    /* Semantic */
+    --danger:        #e05555;
+    --danger-dim:    rgba(224,85,85,0.12);
+    --success:       #4cb87a;
+    --warn:          #c89220;
+
+    /* Buttons */
+    --btn-bg:        #1e2840;
+    --btn-border:    #2c3a56;
+    --btn-text:      #c0cce0;
+    --btn-hover:     #26334f;
+
+    /* Inputs */
+    --input-bg:      #111827;
+    --input-border:  #2c3a56;
+    --input-focus:   #4d9de8;
+
+    /* Picker */
+    --picker-hover:  rgba(77,157,232,0.09);
+    --picker-sel:    rgba(77,157,232,0.18);
+
+    /* Point bar */
+    --pointbar-bg:   #1e2840;
+    --pointbar-fill: #4d9de8;
+    --pointbar-over: #e05555;
+
+    /* Shadows */
+    --shadow-card:   0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.4);
+    --shadow-float:  0 8px 32px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5);
+
+    /* ── Legacy aliases: old .conflictchamber CSS ─────────────────── */
+    --main-color:                 #4d9de8;
+    --dark-color:                 #0a1320;
+    --card-bg:                    #161c2b;
+    --card-textcolor:             #dde3f0;
+    --subheader-top-border-color: #2c3a56;
+    --subheader-bg:               #1e2840;
+    --flow-background:            #1e2840;
+    --link-color:                 #4d9de8;
+    --theme-brightness-filter:    brightness(100%);
+
+    /* ── Legacy aliases: Mk4 builder CSS ─────────────────────────── */
+    --accent-color:    #4d9de8;
+    --subheader-color: #8a9bb5;
+    --border-color:    #2c3a56;
+    --text-color:      #dde3f0;
+    --hover-bg:        rgba(77,157,232,0.09);
+    --bg-color:        #0e1117;
+    --button-bg:       #1e2840;
+}
+
+/* ── Light theme ────────────────────────────────────────────────────── */
+[data-theme="light"] {
+    /* Surfaces */
+    --bg:            #edf0f5;
+    --surface:       #ffffff;
+    --surface-2:     #f4f6fa;
+    --surface-3:     #e8ecf4;
+    --border:        #d0d8e8;
+    --border-soft:   rgba(0,0,0,0.07);
+
+    /* Text */
+    --text:          #18243a;
+    --text-2:        #5a6882;
+    --text-disabled: #a0aabe;
+
+    /* Accent blue — deeper so contrast holds on white */
+    --accent:        #1a6abf;
+    --accent-dark:   #0e4d96;
+    --accent-hover:  #1a80e0;
+    --accent-dim:    rgba(26,106,191,0.10);
+
+    /* Gold */
+    --gold:          #a07010;
+    --gold-dim:      rgba(160,112,16,0.10);
+
+    /* Topbar — stays dark in both themes */
+    --topbar:        #0f2040;
+    --topbar-border: #152a56;
+
+    /* Semantic */
+    --danger:        #c03333;
+    --danger-dim:    rgba(192,51,51,0.09);
+    --success:       #2a8a52;
+    --warn:          #9a6a10;
+
+    /* Buttons */
+    --btn-bg:        #f0f3f8;
+    --btn-border:    #c8d2e4;
+    --btn-text:      #3a4a64;
+    --btn-hover:     #e4e9f4;
+
+    /* Inputs */
+    --input-bg:      #ffffff;
+    --input-border:  #c0cce0;
+    --input-focus:   #1a6abf;
+
+    /* Picker */
+    --picker-hover:  rgba(26,106,191,0.07);
+    --picker-sel:    rgba(26,106,191,0.13);
+
+    /* Point bar */
+    --pointbar-bg:   #d8dfe9;
+    --pointbar-fill: #1a6abf;
+    --pointbar-over: #c03333;
+
+    /* Shadows */
+    --shadow-card:   0 1px 4px rgba(0,0,0,0.10), 0 0 1px rgba(0,0,0,0.06);
+    --shadow-float:  0 4px 24px rgba(0,0,0,0.18), 0 1px 6px rgba(0,0,0,0.10);
+
+    /* ── Legacy aliases: old .conflictchamber CSS ─────────────────── */
+    --main-color:                 #1a6abf;
+    --dark-color:                 #0f2040;
+    --card-bg:                    #ffffff;
+    --card-textcolor:             #18243a;
+    --subheader-top-border-color: #d0d8e8;
+    --subheader-bg:               #f4f6fa;
+    --flow-background:            #edf0f5;
+    --link-color:                 #1a6abf;
+    --theme-brightness-filter:    brightness(70%);
+
+    /* ── Legacy aliases: Mk4 builder CSS ─────────────────────────── */
+    --accent-color:    #1a6abf;
+    --subheader-color: #5a6882;
+    --border-color:    #d0d8e8;
+    --text-color:      #18243a;
+    --hover-bg:        rgba(26,106,191,0.07);
+    --bg-color:        #edf0f5;
+    --button-bg:       #f0f3f8;
+}
+
+/* Page background and text colour driven by theme */
+body {
+    background: var(--bg);
+    color: var(--text);
+    transition: background var(--ease), color var(--ease);
 }
 
 

@@ -1,0 +1,69 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      DOMAIN: ${DOMAIN}
+      CADDY_EMAIL: ${CADDY_EMAIL}
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${BACKEND_IMAGE:-warlist-backend:latest}
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-warlist}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME:-warlist}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      PORT: 8080
+      STATIC_DIR: /app/static
+      APP_VERSION: ${APP_VERSION:-dev}
+    volumes:
+      # Bind-mount for card data updates: sync from S3, then restart backend.
+      # On first deploy, directory is seeded from image defaults by the entrypoint.
+      # On EC2: aws s3 sync s3://your-bucket/data/ /srv/warlist/data/
+      - /srv/warlist/data:/app/static/data
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-warlist}
+      MYSQL_USER: ${DB_USER:-warlist}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      # Bind-mount so data survives `docker compose down -v` and volume pruning.
+      # On first run MySQL initialises the directory automatically.
+      # On EC2: this should live on a persistent EBS volume.
+      - /srv/warlist/db:/var/lib/mysql
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "warlist", "-p${DB_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

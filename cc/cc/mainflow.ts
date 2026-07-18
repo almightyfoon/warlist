@@ -7,30 +7,25 @@ export class MainFlow extends ccweb.Flow {
 
         this.content.innerHTML = `
             <div class="cctitle"></div>
-            <div class="titlefade">&nbsp;Conflict Chamber</div>
+            <div class="titlefade">&nbsp;Warlist</div>
 
-            <div id="likeholder">
-                <div class="fb-like" data-href="https://conflictchamber.com" data-width="330" data-layout="box_count" data-action="like" data-show-faces="false"
-                    data-share="true">
-                </div>
-            </div>
-            
-			<div id="versioninfo">Build CC_VER</div>
+            <div id="versioninfo">Build CC_VER</div>
 
             <div id="abovefold">
                 <div class="uicard ccdisclaimer">
-                    <a href="http://privateerpress.com/warmachine/the-game">Warmachine</a> and <a href="http://privateerpress.com/hordes/the-game">Hordes</a>				are the property of
-                    <a href="http://privateerpress.com">Privateer Press</a>.  Conflict Chamber is not affiliated 
-                    with Privateer Press. Bugs, complaints, and suggestions can be sent <a href="mailto:anon@conflictchamber.com">here</a>.
+                    Warmachine is the property of
+                    <a href="https://steamforged.com">Steam Forged Games</a>.
+                    Warlist is not affiliated with Steam Forged Games.
+                    Bugs and suggestions can be filed on <a href="https://github.com" target="_blank">GitHub</a>.
                 </div>
             </div>
-            
-			<div id="fbnews">
-				<div class="loadholder">
-					<span class="loadspinner"></span>
-					<span class="loadtext">Loading news...</span>
-				</div>
-			</div>			
+
+            <div id="fbnews">
+                <div class="loadholder">
+                    <span class="loadspinner"></span>
+                    <span class="loadtext">Loading news...</span>
+                </div>
+            </div>
 
         `;
     }

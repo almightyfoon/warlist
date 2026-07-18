@@ -1,13 +1,18 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
-	"outDir": "../../node/lib",
 	"module": "commonjs",
 	"declaration": true,
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
         "target": "es6",
+        "lib": ["es2017", "dom"],
         "sourceMap": true
-    }
+    },
+    "files": [
+        "mk4data.ts",
+        "mk4list.ts",
+        "mk4export.ts"
+    ]
 }

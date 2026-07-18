@@ -1,0 +1,23 @@
+[
+  { "id": "cmd1", "name": "Blessing of the Gods",    "pointCost": 0, "universal": true },
+  { "id": "cmd2", "name": "Duck and Cover!",          "pointCost": 0, "universal": true },
+  { "id": "cmd3", "name": "Careful Reconnaissance",  "pointCost": 0, "universal": true },
+  { "id": "cmd4", "name": "Bite and Hold",            "pointCost": 0, "universal": true },
+  { "id": "cmd5", "name": "Put the Fires Out",        "pointCost": 0, "universal": true },
+
+  { "id": "cmd6", "name": "For the Motherland",       "pointCost": 0, "armyIds": ["a41", "a25"] },
+
+  { "id": "cmd7",  "name": "Heavy Airdrop 1",         "pointCost": 5, "armyIds": ["a17"] },
+  { "id": "cmd8",  "name": "Heavy Airdrop 2",         "pointCost": 5, "armyIds": ["a17"] },
+  { "id": "cmd9",  "name": "Light Airdrop 1",         "pointCost": 0, "armyIds": ["a17"] },
+  { "id": "cmd10", "name": "Light Airdrop 2",         "pointCost": 0, "armyIds": ["a17"] },
+  { "id": "cmd11", "name": "Military Engineering",    "pointCost": 0, "armyIds": ["a17"] },
+
+  { "id": "cmd12", "name": "Accursed",                "pointCost": 0, "armyIds": ["a18"] },
+  { "id": "cmd13", "name": "Fortune's Path",          "pointCost": 0, "armyIds": ["a18"] },
+  { "id": "cmd14", "name": "Ill Omens",               "pointCost": 0, "armyIds": ["a18"] },
+  { "id": "cmd15", "name": "Labyrinth",               "pointCost": 0, "armyIds": ["a18"] },
+  { "id": "cmd16", "name": "Ruin",                    "pointCost": 0, "armyIds": ["a18"] },
+  { "id": "cmd17", "name": "Sacrifice",               "pointCost": 0, "armyIds": ["a18"] },
+  { "id": "cmd18", "name": "Shroud",                  "pointCost": 0, "armyIds": ["a18"] }
+]

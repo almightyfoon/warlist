@@ -1,985 +1,394 @@
-
 import * as ccweb from "../ccweb/ccweb";
-import * as ccapi from "../ccapi/ccapi";
+import * as g from "./g";
 
-import { loadStoredData, saveListInternal, openListInternal } from "./ccstorage";
-import { showEvent, api } from "./cctourn";
+import { loadStoredData, saveMk4List, savedLists, deleteList } from "./ccstorage";
 import { MainFlow } from "./mainflow";
-import { authAjax } from "./cclogin";
-
-
-import { submitTournament, showATC, showTournaments,
-    cleanupTournament, showDGIList } from "./ccsubtourn";
+import { requireLogin } from "./cclogin";
+import { Mk4Data } from "../ccapi/mk4data";
+import { decodeList } from "../ccapi/mk4export";
+import { serialise } from "../ccapi/mk4list";
 
 (<any>window)._loadStoredData = loadStoredData;
 
-let _mainFlow : MainFlow = null;
-let _editor: ccweb.Editor = null;
-let _restoreFocus : HTMLElement = null;
-
-export function setMainFocus(foc : HTMLElement) {
-    _restoreFocus = foc;
+function localStorageGet(key: string): string | null {
+    try { return localStorage.getItem(key); } catch { return null; }
 }
 
-function restoreFocus() {
-    if( _restoreFocus ) {
-        _restoreFocus.focus();
-    }
+let _mainFlow: MainFlow = null;
+let _authAreaDiv: HTMLDivElement | null = null;
+let _dataReady: Promise<void>;
+
+// ---------------------------------------------------------------------------
+// Theme
+// ---------------------------------------------------------------------------
+
+function lightTheme(): void {
+    document.documentElement.setAttribute('data-theme', 'light');
+    try { localStorage.setItem('cctheme', 'light'); } catch {}
+}
+function darkTheme(): void {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    try { localStorage.setItem('cctheme', 'dark'); } catch {}
 }
 
-function queryParameter(name : string, url?: string) : string {
-    if( !url ) {
-        url = window.location.href;
-    }
-
-    name = name.replace(/[\[\]]/g, "\\$&");
-
-    let regex : RegExp = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)")
-    let results : RegExpExecArray = regex.exec(url);
-
-    if (!results) {
-        return null;
-    }
-
-    if (!results[2]) {
-        return "";
-    }
-
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
-function removeHash() {
-    window.history.pushState("", document.title, window.location.pathname);
-}
-
-function route(search : string, skipHistory: boolean) : boolean {
-    if( queryParameter("tournaments", search) != null ) {
-        showTournaments(skipHistory);
-        return true;
-    }
-    else if( queryParameter("atclists", search) != null ) {
-        showATC(skipHistory);
-        return true;
-    }
-    else if( queryParameter("submit", search) != null ) {
-        submitTournament(skipHistory, true);
-        return true;
-    }
-    else if( queryParameter("postevent", search) != null ) {
-        submitTournament(skipHistory, false);
-        return true;
-    }
-    else if( queryParameter("news", search) != null ) {
-        showBlog(skipHistory);
-        return true;
-    }
-    else if( queryParameter("dgilist", search) != null ) {
-        showDGIList(skipHistory);
-        return true;
-    }
-    else if ( queryParameter("event", search) != null) {
-        let eid : number = parseInt(queryParameter("event", search));
-
-        let regCode : string = queryParameter("regcode", search);
-
-        if( !isNaN(eid) ) {
-            showEvent(eid, skipHistory, regCode);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-function resizeWindow() : void {
-    let flow : ccweb.Flow = ccweb.Flow._activeFlow;
-    let topBarMode : boolean = false;
-    let emblemLeft : string = "";
-
-    if( flow && flow.visible() ) {
-        let gap : number = document.body.clientWidth - flow.container.offsetWidth;
-
-        // Extra space to display current flow
-
-        if( gap > 400 ) {
-            // More than enough to fit the emblem menu
-            // keep flow centered
-            flow.container.style.marginLeft = "auto";
-            flow.container.style.marginRight = "auto";
-            flow.container.style.zoom = "";
-            topBarMode = false;
-        }
-        else if( gap > 200 ) {
-            // Can display emblem menu, but need to
-            // push the flow off-center to fit everything
-            flow.container.style.marginLeft = "200px";
-            flow.container.style.marginRight = "0px";
-            flow.container.style.zoom = "";
-            topBarMode = false;
-        }
-        else if( gap < 0 ) {
-            // Window is smaller than the flow, so shrink
-            // the flow (and show top bar)
-            flow.container.style.marginLeft = "0px";
-            flow.container.style.marginRight = "0px";
-            flow.container.style.zoom = "" + 
-                (document.body.clientWidth / flow.container.offsetWidth);
-            topBarMode = true;
-        }
-        else {
-            // Window is larger than the flow but too small to show
-            // the emblem menu, so use the top bar
-            flow.container.style.marginLeft = "auto";
-            flow.container.style.marginRight = "auto";
-            flow.container.style.zoom = "";
-            topBarMode = true;
-        }
-
-        if( !topBarMode ) {
-            emblemLeft = "" + (flow.container.offsetLeft - 180) + "px";
-        }
-    }
-    else if( _editor && _editor.visible() ) {
-        _editor.windowResized();
-
-        let rect : DOMRect | ClientRect = _editor.armyListHolder.getBoundingClientRect();
-
-        if( window.innerWidth - rect.right > 195 ) {
-            topBarMode = false;
-            emblemLeft = "" + (rect.right + 25) + "px";
-        }
-        else {
-            topBarMode = true;
-        }
-    }
-
-    document.getElementById("cctop").style.display = topBarMode ? "inline-block" : "none";
-
-
-    if( !_emblemDialogShown ) {
-        _emblemMenu.style.display = topBarMode ? "none" : "inline-block";
-        
-        if( !topBarMode && _emblemMenu.parentElement != document.body ) {
-            document.body.appendChild(_emblemMenu);
-            _emblemMenu.className = "conflictchamber";
-        }
-
-        if( !topBarMode ) {
-            _emblemMenu.style.left = emblemLeft;
-
-            if( !_emblemInitialized ) {
-                initializeEmblem();
-            }
-        }
-    }
-
-    let userPanel : HTMLElement = document.getElementById("userpanel");
-
-    if( topBarMode ) {
-        document.body.style.setProperty("--topbar-margin", "26px");
-    }
-    else {
-        document.body.style.setProperty("--topbar-margin", "0px");
-    }
-
-
-    ccweb.CardViewer.windowResized();
-}
-
-function hideEmblemDialog() : void {
-    if( ccweb.Dialog.active() ) {
-        ccweb.Dialog.active().close();
-    }
-
-    _emblemDialogShown = false;
-    resizeWindow();
-}
-
-
-function initializeEmblem() : void {
-    _emblemInitialized = true;
-
-    document.getElementById("emblem").onclick = quitToMain;
-
-    let userPanel : HTMLElement = document.getElementById("emblemuserholder");
-
-    _emblemMenu.insertBefore(new ccweb.Button({
-        text: "Build a List!",
-        size: "mediumfixed",
-        click: () => { 
-            hideEmblemDialog();
-            defaultEditor().show(true);
-        }
-    }).container, userPanel);
-
-    _emblemMenu.appendChild(new ccweb.Button({
-        text: "Tournament Results",
-        size: "mediumfixed",
-        className: "trbutton",
-        click: () => { 
-            hideEmblemDialog();
-            window.open("http://discountgamesinc.com/tournaments", "_blank"); 
-        }
-    }).container);
-
-
-    _emblemMenu.appendChild(new ccweb.Button({
-        text: "Post Event",
-        size: "mediumfixed",
-        click: () => { 
-            hideEmblemDialog();
-            submitTournament(false, false); 
-        }
-    }).container);
-
-    let theme : ccweb.UIElement = new ccweb.UIElement("themesel");
-
-    let sp : HTMLSpanElement = document.createElement("span");
-    sp.appendChild(document.createTextNode("Theme:"));
-    theme.add(sp);    
-
-    theme.add(new ccweb.Button({
-        text: "Light",
-        size: "small",
-        click: () => { lightTheme(); }
-    }));
-
-    theme.add(new ccweb.Button({
-        text: "Dark",
-        size: "small",
-        click: () => { darkTheme(); }
-    }));
-
-    _emblemMenu.appendChild(theme.container);
-
-    let loginOptions : HTMLElement = document.getElementById("loginoptions");
-
-    loginOptions.appendChild(new ccweb.Button({
-        text: "Load List",
-        size: "small",
-        click: openList
-    }).container);
-    
-    loginOptions.appendChild(new ccweb.Button({
-        text: "Save List",
-        size: "small",
-        click: saveList
-    }).container);
-    
-    loginOptions.appendChild(new ccweb.Button({
-        text: "Sign Out",
-        size: "small",
-        click: signOut
-    }).container);
-
-
-    let kofi : HTMLDivElement = document.createElement("div");
-    kofi.className = "kofiholder";
-
-    kofi.innerHTML = (<any>window).kofihtml;
-
-    _emblemMenu.appendChild(kofi);
-    
-}
-
-// defined in index.html
-declare function setLightTheme() : void;
-declare function setDarkTheme() : void;
-
-function lightTheme() : void {
-    //document.body.className = "";
-    setLightTheme();
-    localStorage.setItem("cctheme", "light");
-}
-
-function darkTheme() : void {
-    setDarkTheme();
-    //document.body.className = "ccdark";
-    localStorage.setItem("cctheme", "dark");
-}
-
-let _emblemInitialized : boolean = false;
-let _emblemDialogShown : boolean = false;
-
-function clickMainMenu() : void {
-    if( ccweb.Dialog.active() ) {
-        return;
-    }
-
-    let dlg: ccweb.Dialog = new ccweb.Dialog(() =>{
-            _emblemDialogShown = false;
-            resizeWindow();
-        }, 
-        "Menu", 
-        "menu", "emblemdialogholder");
-
-    if( !_emblemInitialized ) {
-        initializeEmblem();
-    }
-
-    dlg.card.content.appendChild(_emblemMenu);
-    _emblemMenu.className = "conflictchamber emblemdialog";
-    _emblemMenu.style.display = "inline-block";
-    _emblemMenu.style.left = "0px";
-
-    dlg.show();
-
-    _emblemDialogShown = true;
-}
-
-let _emblemMenu : HTMLElement;
-
-export function loadBody() : void {
-    ccweb.Flow.showCallback = (flow : ccweb.Flow) => {
-        resizeWindow();
-    };
-
-    authAjax(api("/cdn"), null, (loggedIn : boolean, s : string) => {
-        //console.log("Got back from cdn: " + s);
-
-        if( s != "false" && s != "null" ) {
-            ccweb.CardViewer.cdn = s;
-        }
-    });
-
-    _emblemMenu = document.getElementById("emblemmenu");
-
-    document.getElementById("ccgearsbutton").onclick = clickMainMenu;
-    document.getElementById("ccmenubutton").onclick = clickMainMenu;
-    
-    document.body.onfocus = restoreFocus;
-
-    document.onkeydown = keyPress;
-
-    window.onresize = resizeWindow;
-
-    window.onpopstate = onPopState;
-
-    ccapi.loadData(null);
-
-    // Fix Facebook bullshit
-
-
-    let search : string = window.location.search;
-
-    //console.log("Search string: " + search);
-
-    let fbStart = search.indexOf("fbclid=");
-    let fbParanoid = search.indexOf("&fbclid=");
-
-    if( fbParanoid >= 0 && fbParanoid == fbStart - 1) {
-        fbStart = fbParanoid;
-    }
-
-    if( fbStart != -1 ) {
-        let fbEnd = search.indexOf("&", fbStart + 1);
-
-        if( fbEnd == -1 ) {
-            search = search.substr(0, fbStart);
-        }
-        else {
-            search = search.substr(0, fbStart) + search.substr(fbEnd + 1);
-        }
-
-    }
-
-    if( search == "?" ) {
-        search = null;
-    }
-
-    let routeGood : boolean = false;
-
-    //console.log(search);
-
-    if( search != null && search != "" )
-    {
-        routeGood = route(search, false);
-    }
-
-    //console.log(routeGood);
-
-
-    let hash : string = window.location.hash;
-
-
-    if( !routeGood && search != null && search != "" ) {
-        hash = search;
-    }
-
-    //console.log("Using hash: " + hash);
-
-
-    if (!routeGood && hash != null &&hash.length > 1) {
-        if( hash == "#atclists"
-                || hash == "/#atclists" ) {
-            removeHash();
-            showATC();
-        }
-        else if( hash.substring(1, 2) == "a" ||
-                hash.substring(1,2) == "b" ||
-                hash.substring(1,2) == "c"
-                ) {
-
-            let code : string = hash.substring(1);
-
-            //console.log("Loading code " + code);
-
-            document.title = "Conflict Chamber | Editor";
-            window.history.replaceState({}, "Conflict Chamber | Editor", "/");
-            showEditor(code, true);
-        }
-        else if( window.location.hash.substring(1,2) == "p" )
-        {
-            let code : string = "c" + window.location.hash.substring(2);
-            document.title = "Conflict Chamber | Editor";
-            window.history.replaceState({}, "Conflict Chamber | Editor", "/");
-            showEditor(code, true);
-            ccweb.Editor.printList(code);
-        }
-        else if( hash == "#tournaments"
-                || hash == "/#tournaments") {
-            removeHash();
-            showTournaments();
-        }
-        else if( hash == "#news"
-                || hash == "/#news" ) {
-            removeHash();
-            showBlog();
-        }
-        else if( hash == "#submit"
-                || hash == "/#submit" ) {
-            removeHash();
-            submitTournament(false, true);
-        }
-    }
-    else if( !routeGood ) {
-        showEditor(null, true);
-    }
-
-    ccweb.ajax("https://conflictchamber.com/fbnews.php", gotFBNews);
-
-
-
-    resizeWindow();
-    //require(["cc/fb"], function(fb : any) { fb.checkLogin(); });
-}
-
-export function defaultEditor() : ccweb.Editor {
-    if( _editor == null ) {
-        _editor = new ccweb.Editor(
-            quitToMain,
-            -1,
-            onListUpdate,
-            null,
-            ccweb.Editor.defaultRules
-        );
-    }
-
-    return _editor;
-}
-
-function mainFactionSelectionCallback(fid : number, rules : ccapi.Rules, 
-    fs : ccweb.FactionSelection) : void 
-{
-    ccweb.Flow.hideFlows();
-    
-    _editor = new ccweb.Editor(
-        quitToMain,
-        fid,
-        onListUpdate,
-        null,
-        rules
-    );
-
-    _editor.show();
-
-    resizeWindow();
-}
-
-function postFBNews(fbnews : HTMLDivElement, post : any) {
-    let fbid : string = post[1];
-    let loc : number = fbid.indexOf('_');
-
-    if( loc == -1 ) {
-        return;
-    }
-
-    let pageid : string = fbid.substr(0, loc);
-    let postid : string = fbid.substr(loc + 1);
-
-    let url : string = "https://www.facebook.com/" + pageid +
-        "/posts/" + postid + "&width=576";
-
-    let fbpost : HTMLDivElement = document.createElement("div");
-    fbpost.className = "fb-post";
-    fbpost.setAttribute("data-href", url);
-    fbpost.setAttribute("data-width", "576");
-
-    fbnews.appendChild(fbpost);
-}
-
-let _storedFBNews : string = null;
-
-function gotFBNews(s : string) : void {
-    let fbnews : HTMLDivElement =
-        <HTMLDivElement>document.getElementById("fbnews");
-
-    if( fbnews == null ) {
-        _storedFBNews = s;
-        return;
-    }
-
-    while( fbnews.hasChildNodes() ) {
-        fbnews.removeChild(fbnews.lastChild);
-    }
-
-
-    let data : any[][] = null;
-
-    try {
-        data = JSON.parse(s);
-    }
-    catch(err )
-    {
-        fbnews.appendChild(document.createTextNode("Unable to load news"));
-        return;
-    }
-
-    for( let i : number = 0; i < data.length && i < 7; i++ ) {
-        postFBNews(fbnews, data[i]);
-    }
-
-    // facebook load more
-    
-    // if( false && data.length >= 7 ) {
-    //     let loadMore : HTMLDivElement = document.createElement("div");
-    //     loadMore.className = "lb bh fbloadmore";
-
-    //     loadMore.onclick = ((holder : HTMLDivElement, button : HTMLDivElement, fbPosts : any) => {
-
-    //         return () => {
-    //             holder.removeChild(button);
-
-    //             for( let i : number = 7; i < fbPosts.length; i++ ) {
-    //                 postFBNews(holder, fbPosts[i]);
-    //             }
-
-	//             (<any>window).fbOb.XFBML.parse();
-    //         };
-
-    //     })(fbnews, loadMore, data);
-
-    //     fbnews.appendChild(loadMore);
-
-    // }
-
-
-	(<any>window).fbOb.XFBML.parse();
-}
-
-
-
-export function hideAll(skipHistory? : boolean): void {
-    //document.getElementById("mainMenu").style.display = "none";
-    //document.getElementById("blog").style.display = "none";
-    //document.getElementById("tournaments").style.display = "none";
-    //document.getElementById("tournament_submission").style.display = "none";
-
-    ccweb.Flow.hideFlows();
-
-    let dgitourn : HTMLElement = document.getElementById("dgitourn");
-
-    if( dgitourn ) {
-        dgitourn.style.display = "none";
-    }
-
-    cleanupTournament();
-
-    if (_editor) {
-        _editor.hide();
-    }
-
-    ccweb.CardViewer.hide();
-}
-
-function showBlog(skipHistory? : boolean): void {
-    hideAll();
-
-    manageHistory("Updates", "news", skipHistory);
-
-
-	document.getElementById("blog").innerHTML = `<div id="fbnews">
-				<div class="loadholder">
-					<span class="loadspinner"></span>
-					<span class="loadtext">Loading update history...</span>
-				</div>
-			</div>`;
-
-
-    document.getElementById("blog").style.display = "";
-    setMainFocus(document.getElementById("blog"));
-    ccweb.ajax("https://conflictchamber.com/blog.php", gotBlog);
-}
-
-function onListUpdate(ccode : string) : void {
-    document.title = "Conflict Chamber | Editor";
-    window.history.replaceState(
-        {"ccode" : ccode}, 
-        "Conflict Chamber | Editor", 
-        "?" + ccode);
-
-    resizeWindow();
-}
-
-
-export function manageHistory(title : string, search : string, skipHistory : boolean) {
-    document.title = "Conflict Chamber | " + title;
-
-    if( skipHistory ) {
-
-    }
-    else if( title == "Editor" ) {
-        window.history.pushState({"ccode" : search}, "Conflict Chamber | " + title, "/");
-    }
-    else {
-	    window.history.pushState({"search" : search}, "Conflict Chamber | " + title, "?" + search);
+// ---------------------------------------------------------------------------
+// Builder
+// ---------------------------------------------------------------------------
+
+// Render a Google Sign-In button into an element; retries until the SDK is ready.
+function renderSignInButton(element: HTMLElement): void {
+    const goog = (<any>window).google;
+    if (goog?.accounts?.id) {
+        goog.accounts.id.renderButton(element,
+            { theme: 'outline', size: 'medium', type: 'standard' });
+    } else {
+        setTimeout(() => renderSignInButton(element), 150);
     }
 }
 
-function onPopState(event : PopStateEvent) : void {
-    if( event.state && event.state.search ) {
-        route("?" + event.state.search, true);
-    }
-    else if( event.state && event.state.ccode ) {
-        document.title = "Conflict Chamber | Editor";
-        showEditor(event.state.ccode, true);
-    }
-    else {
-        document.title = "Conflict Chamber | Main";
-        showEditor(null, true);
-    }
+function getSavedLists(): { offset: number; description: string; listdata: string }[] {
+    return Object.values(savedLists).sort((a, b) => a.offset - b.offset);
 }
 
-let _myEventsHolder : HTMLDivElement = document.createElement("div");
-
-export function buildEventLink(event : any) : HTMLDivElement {
-    let eventDiv : HTMLDivElement = document.createElement("div");
-    eventDiv.className = "myevent";
-
-    let eventFade : HTMLAnchorElement = document.createElement("a");
-    eventFade.className = "myeventfade";
-    eventFade.href = "https://conflictchamber.com/?event=" + event.uid;
-    eventDiv.appendChild(eventFade);
-
-    if( event.cover ) {
-        eventDiv.style.backgroundImage = "url(\"" + event.cover + "\")";
-    }
-    else {
-        eventDiv.style.backgroundImage = "url(\"img/event_default.jpg\")";
-    }
-
-    eventFade.appendChild(document.createTextNode(event.name));
-
-    let rules : any = JSON.parse(event.rules);
-
-    if( rules ) {
-
-        if( rules.preReleaseDate ) {
-            let eventDate : HTMLDivElement = document.createElement("div");
-            eventDate.className = "myeventdate";
-            let date = new Date(rules.preReleaseDate)
-            eventDate.appendChild(document.createTextNode(date.toLocaleDateString([], 
-                { 
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                })));
-
-            eventFade.appendChild(eventDate);
-        }
-    }
-
-
-    return eventDiv;
-}
-
-export function showMyEvents(s : string) {
-    if( s != "false" ) {
-        let events : any = JSON.parse(s);
-
-        if( events != null && events.length > 0 ) {
-            let card : ccweb.Card = new ccweb.Card({
-                size: "full",
-                title: "My Events",
-                icon: "view_list",
-                expand: true
+function saveListWithAuth(desc: string, data: string, onResult?: (msg: string) => void): void {
+    requireLogin(
+        () => {
+            try { sessionStorage.setItem('warlist_pending_save', JSON.stringify({ desc, data })); } catch {}
+            onResult?.('Sign in via the ☰ menu — your list will save automatically after sign-in.');
+        },
+        () => {
+            saveMk4List(desc, data, () => {
+                onResult?.('Save failed — check your connection and try again.');
+                renderMainAuthArea();
             });
-
-            let extraHolder : HTMLDivElement = null;
-
-            if( events.length > 3 ) {
-                extraHolder = document.createElement("div");
-                extraHolder.style.display = "none";
-            }
-
-            for( let i : number = events.length - 1; i >= 0; i-- ) {
-                let eventDiv : HTMLDivElement = buildEventLink(events[i]);
-
-                if( i < (events.length - 3) ) {
-                    extraHolder.appendChild(eventDiv);
-                }
-                else {
-                    card.add(eventDiv);
-                }
-            }
-
-            if( events.length > 3 ) {
-                let showMore : ccweb.Button = new ccweb.Button({
-                    size: "mediumfixed",
-                    text: "Load More",
-                    click: (but : ccweb.Button) => {
-                        but.hide();
-                        extraHolder.style.display = "";
-                    }
-                });
-
-                card.add(showMore);
-                card.add(extraHolder);
-            }
-
-            _myEventsHolder.appendChild(card.container);
+            onResult?.('Saved!');
+            renderMainAuthArea();
         }
-    }
+    );
 }
 
-function initializeMainFlow() : void {
-    let abovefold : HTMLDivElement =
-        <HTMLDivElement>document.getElementById("abovefold");
-
-    let dgiCard = new ccweb.Card({
-        size: "half"
-    });
-
-    let dgiLink = document.createElement("a");
-    dgiLink.href = "http://discountgamesinc.com";
-
-    let dgiImg = document.createElement("div");
-    dgiImg.className = "dgilogo";
-    dgiLink.appendChild(dgiImg);
-
-    dgiCard.add(dgiLink);
-
-    dgiCard.add("Conflict Chamber is sponsored by Discount Games Inc.");
-
-
-    abovefold.appendChild(dgiCard.container);
-
-    let factionSel : ccweb.FactionSelection 
-        = new ccweb.FactionSelection(mainFactionSelectionCallback, null, false);
-
-    abovefold.appendChild(factionSel.card.container);
-    abovefold.appendChild(_myEventsHolder);
-
-}
-
-function showMainFlow() : void {
-    if( _mainFlow == null ) {
-        _mainFlow = new MainFlow();
-
-        initializeMainFlow();
-
-        if( _storedFBNews ) {
-            gotFBNews(_storedFBNews);
-        }
-    }
-
-    _mainFlow.show();
+function openBuilderWithList(listdata: string): void {
+    closeEmblemDialog();
+    manageHistory('Builder', 'builder');
+    const builder = new ccweb.BuilderFlow(saveListWithAuth, quitToMain, getSavedLists, deleteList);
+    builder.loadList(listdata);
     resizeWindow();
 }
 
-
-function showEditor(code? : string, skipHistory? : boolean): void {
-    if( _editor && _editor.visible() ) {
-        return;
-    }
-
-    hideAll();
-
-    if( code || _editor ) {
-        if( _mainFlow ) {
-            _mainFlow.hide();
-        }
-    }
-    else {
-        showMainFlow();
-        return;
-    }
-
-    if( code ) {
-
-        if( !_editor ) {
-            _editor = new ccweb.Editor(
-                quitToMain,
-                -1,
-                onListUpdate,
-                null,
-                ccweb.Editor.defaultRules
-            );
-        }
-
-        _editor.restoreCode(code);
-
-        document.title = "Conflict Chamber | Main";
-    }
-
-    manageHistory("Editor", code, skipHistory);
+function showMk4Builder(skipHistory?: boolean): void {
+    closeEmblemDialog();
+    manageHistory('Builder', 'builder', skipHistory);
+    new ccweb.BuilderFlow(saveListWithAuth, quitToMain, getSavedLists, deleteList);
+    resizeWindow();
 }
 
-function gotBlog(text: string): void {
-    let blog: any = JSON.parse(text);
+// ---------------------------------------------------------------------------
+// Emblem / menu
+// ---------------------------------------------------------------------------
 
-    let blogDiv: HTMLElement = document.getElementById("blog");
+let _emblemMenu: HTMLElement;
+let _emblemInitialized  = false;
+let _emblemDialogShown  = false;
 
-    while (blogDiv.hasChildNodes()) {
-        blogDiv.removeChild(blogDiv.lastChild);
-    }
-
-    for (let i = 0; i < blog.length; i++) {
-        if (blog[i].post_type == "1") {
-            let outer: HTMLDivElement = document.createElement("div");
-            outer.className = "blogOuter";
-
-            let icon: HTMLDivElement = document.createElement("div");
-            icon.className = "blogRevision";
-            outer.appendChild(icon);
-
-            let bd: HTMLDivElement = document.createElement("div");
-            bd.className = "blogDate";
-            bd.appendChild(document.createTextNode(blog[i].date_posted));
-            outer.appendChild(bd);
-
-            let rev: HTMLDivElement = document.createElement("div");
-            rev.className = "blogRevNumber";
-            rev.appendChild(document.createTextNode(blog[i].title));
-            outer.appendChild(rev);
-
-            let postText: HTMLDivElement = document.createElement("div");
-            postText.className = "blogRevText";
-            postText.appendChild(document.createTextNode(blog[i].post_text));
-            outer.appendChild(postText);
-
-            let sep: HTMLDivElement = document.createElement("div");
-            sep.className = "blogSep";
-            outer.appendChild(sep);
-
-            blogDiv.appendChild(outer);
-
-        }
-    }
-
-    let end: HTMLDivElement = document.createElement("div");
-    end.className = "blogEnd";
-    blogDiv.appendChild(end);
-}
-
-
-function keyPress(e: any): void {
-    let evtobj: any = window.event ? event : e;
-
-    if( ccweb.Editor.handleKeyPress(evtobj) ) {
-        return;
-    }
-
-    if( ccweb.CardViewer.handleKeyPress(evtobj) ) {
-        return;
-    }
-}
-
-
-
-
-
-// Editor data
-
-
-
-
-
-function clickHelp(): void {
-    document.getElementById("helpDialog").style.display = "none";
-}
-
-function clickHelpInner(ev: Event): void {
-    ev.stopPropagation();
-}
-
-
-function quitToMain(): void {
-
-    document.title = "Conflict Chamber | Main";
-    window.history.replaceState(
-        {}, 
-        "Conflict Chamber | Main", 
-        ".");
-
-
-
-    if( _editor ) {
-        _editor.hide();
-        _editor.remove();
-        _editor = null;
-    }
-
-    showMainFlow();
-
-    showEditor(null, true);
-}
-
-
-
-
-
-interface signOutInterface {
-    (): void;
-}
-
-declare var googleSignOut: signOutInterface;
-declare var facebookSignOut: signOutInterface;
-
-function signOut(): void {
-
-    //requirejs(['cc/ccmain'], function (cc: any) {
-        //console.log(cc._loginType);
-
-        if( (<any>window)._loginType == "fb" ) {
-            (<any>window).fbSignOut();
-        }
-
-        else require(["cc/" + (<any>window)._loginType], function (lo: any) {
-            //console.log(lo);
-            lo.signOut();
-        });
-
-
-    //});
-}
-
-
-function closeEmblemDialog() : void {
-    if( _emblemDialogShown ) {
-        ccweb.Dialog.active().close();        
+function closeEmblemDialog(): void {
+    if (_emblemDialogShown && ccweb.Dialog.active()) {
+        ccweb.Dialog.active().close();
         _emblemDialogShown = false;
     }
 }
 
-export function openList(): void {
-    closeEmblemDialog();
-    //openListInternal(_editor);
-    openListInternal(ccweb.Editor.currentEditor);
+function initializeEmblem(): void {
+    _emblemInitialized = true;
+
+    document.getElementById('emblem').onclick = quitToMain;
+
+    const userPanel = document.getElementById('emblemuserholder');
+
+    _emblemMenu.insertBefore(new ccweb.Button({
+        text: 'Build a List!',
+        size: 'mediumfixed',
+        click: () => showMk4Builder(),
+    }).container, userPanel);
+
+    const theme = new ccweb.UIElement('themesel');
+    const sp = document.createElement('span');
+    sp.textContent = 'Theme:';
+    theme.add(sp);
+    theme.add(new ccweb.Button({ text: 'Light', size: 'small', click: lightTheme }));
+    theme.add(new ccweb.Button({ text: 'Dark',  size: 'small', click: darkTheme  }));
+    _emblemMenu.appendChild(theme.container);
+
+    const loginOptions = document.getElementById('loginoptions');
+    loginOptions.appendChild(new ccweb.Button({
+        text: 'Sign Out', size: 'small', click: () => { g.signOut(); renderMainAuthArea(); },
+    }).container);
 }
 
-export function saveList(): void {
-    closeEmblemDialog();
-    saveListInternal(ccweb.Editor.currentEditor);
+function clickMainMenu(): void {
+    if (ccweb.Dialog.active()) return;
+
+    const dlg = new ccweb.Dialog(
+        () => { _emblemDialogShown = false; resizeWindow(); },
+        'Menu', 'menu', 'emblemdialogholder'
+    );
+
+    if (!_emblemInitialized) initializeEmblem();
+
+    dlg.card.content.appendChild(_emblemMenu);
+    _emblemMenu.className = 'conflictchamber emblemdialog';
+    _emblemMenu.style.display = 'inline-block';
+    _emblemMenu.style.left = '0px';
+    dlg.show();
+    _emblemDialogShown = true;
+}
+
+// ---------------------------------------------------------------------------
+// Layout
+// ---------------------------------------------------------------------------
+
+function resizeWindow(): void {
+    const flow = ccweb.Flow._activeFlow;
+    if (flow && flow.visible()) {
+        const gap = document.body.clientWidth - flow.container.offsetWidth;
+        flow.container.style.marginLeft  = gap > 200 ? 'auto' : '0px';
+        flow.container.style.marginRight = 'auto';
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Blog
+// ---------------------------------------------------------------------------
+
+function showBlog(skipHistory?: boolean): void {
+    quitToMain();
+    manageHistory('Updates', 'news', skipHistory);
+
+    document.getElementById('blog').innerHTML = `<div id="fbnews">
+        <div class="loadholder">
+            <span class="loadspinner"></span>
+            <span class="loadtext">Loading update history...</span>
+        </div>
+    </div>`;
+    document.getElementById('blog').style.display = '';
+    ccweb.ajax('/blog', gotBlog, () => {
+        const blogDiv = document.getElementById('blog');
+        if (blogDiv) blogDiv.innerHTML = '<div class="mk4-empty-slot">Could not load updates — check your connection.</div>';
+    });
+}
+
+function makeDiv(cls: string, text?: string): HTMLDivElement {
+    const d = document.createElement('div');
+    d.className = cls;
+    if (text !== undefined) d.textContent = text;
+    return d;
+}
+
+function gotBlog(text: string): void {
+    let blog: any[];
+    try { blog = JSON.parse(text); } catch { return; }
+    const blogDiv = document.getElementById('blog');
+    if (!blogDiv) return;
+    blogDiv.innerHTML = '';
+
+    for (const post of blog) {
+        if (post.post_type !== '1') continue;
+        const outer = makeDiv('blogOuter');
+        outer.appendChild(makeDiv('blogRevision'));
+        outer.appendChild(makeDiv('blogDate',      String(post.date_posted ?? '')));
+        outer.appendChild(makeDiv('blogRevNumber', String(post.title       ?? '')));
+        outer.appendChild(makeDiv('blogRevText',   String(post.post_text   ?? '')));
+        outer.appendChild(makeDiv('blogSep'));
+        blogDiv.appendChild(outer);
+    }
+    blogDiv.appendChild(makeDiv('blogEnd'));
+}
+
+// ---------------------------------------------------------------------------
+// Routing / history
+// ---------------------------------------------------------------------------
+
+function queryParameter(name: string): string | null {
+    const regex = new RegExp('[?&]' + name.replace(/[\[\]]/g, '\\$&') + '(=([^&#]*)|&|#|$)');
+    const results = regex.exec(window.location.href);
+    if (!results) return null;
+    return decodeURIComponent((results[2] ?? '').replace(/\+/g, ' '));
+}
+
+export function manageHistory(title: string, search: string, skipHistory?: boolean): void {
+    document.title = 'Warlist | ' + title;
+    if (!skipHistory) {
+        window.history.pushState({ search }, 'Warlist | ' + title, '?' + search);
+    }
+}
+
+function openBuilderFromLink(encoded: string, skipHistory?: boolean): void {
+    _dataReady.then(() => {
+        const list = decodeList(encoded);
+        if (list) openBuilderWithList(serialise(list));
+        else showMainFlow();
+    }).catch(() => showMainFlow());
+}
+
+function route(skipHistory: boolean): boolean {
+    if (queryParameter('news')    !== null) { showBlog(skipHistory);        return true; }
+    if (queryParameter('builder') !== null) { showMk4Builder(skipHistory);  return true; }
+    const listCode = queryParameter('list');
+    if (listCode !== null) { openBuilderFromLink(listCode, skipHistory);   return true; }
+    return false;
+}
+
+function onPopState(event: PopStateEvent): void {
+    if (event.state?.search) route(true);
+    else quitToMain();
+}
+
+function quitToMain(): void {
+    document.title = 'Warlist | Main';
+    window.history.replaceState({}, 'Warlist | Main', '.');
+    ccweb.Flow.hideFlows();
+    showMainFlow();
+}
+
+// ---------------------------------------------------------------------------
+// Main flow — auth area
+// ---------------------------------------------------------------------------
+
+function renderMainAuthArea(): void {
+    if (!_authAreaDiv) return;
+    _authAreaDiv.innerHTML = '';
+
+    if ((<any>window)._idToken) {
+        const lists = getSavedLists();
+        const email = (<any>window)._userEmail as string | null;
+
+        const hdr = document.createElement('div');
+        hdr.className = 'mk4-auth-header';
+        const userInfo = document.createElement('div');
+        userInfo.className = 'mk4-auth-userinfo';
+        const title = document.createElement('span');
+        title.className = 'mk4-section-title';
+        title.textContent = 'My Saved Lists';
+        userInfo.appendChild(title);
+        if (email) {
+            const emailSpan = document.createElement('span');
+            emailSpan.className = 'mk4-auth-email';
+            emailSpan.textContent = email;
+            userInfo.appendChild(emailSpan);
+        }
+        hdr.appendChild(userInfo);
+        const signOutBtn = document.createElement('button');
+        signOutBtn.className = 'mk4-signout-btn';
+        signOutBtn.textContent = 'Sign Out';
+        signOutBtn.onclick = () => { g.signOut(); renderMainAuthArea(); };
+        hdr.appendChild(signOutBtn);
+        _authAreaDiv.appendChild(hdr);
+
+        if (lists.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'mk4-empty-slot';
+            empty.textContent = 'No saved lists yet — build one!';
+            _authAreaDiv.appendChild(empty);
+        } else {
+            for (const meta of lists) {
+                const row = document.createElement('div');
+                row.className = 'mk4-saved-list-row';
+                const name = document.createElement('span');
+                name.className = 'mk4-saved-list-name';
+                name.textContent = meta.description;
+                row.appendChild(name);
+                const loadBtn = document.createElement('button');
+                loadBtn.className = 'mk4-list-load-btn';
+                loadBtn.textContent = 'Load';
+                loadBtn.onclick = () => openBuilderWithList(meta.listdata);
+                row.appendChild(loadBtn);
+                const delBtn = document.createElement('button');
+                delBtn.className = 'mk4-list-delete-btn';
+                delBtn.textContent = '✕';
+                delBtn.title = 'Delete list';
+                delBtn.onclick = () => { deleteList(meta.offset, () => renderMainAuthArea()); };
+                row.appendChild(delBtn);
+                _authAreaDiv!.appendChild(row);
+            }
+        }
+    } else if (localStorageGet('warlist_auth_email') !== null) {
+        const blurb = document.createElement('div');
+        blurb.className = 'mk4-signin-blurb';
+        blurb.textContent = 'Restoring session…';
+        _authAreaDiv.appendChild(blurb);
+    } else {
+        const blurb = document.createElement('div');
+        blurb.className = 'mk4-signin-blurb';
+        blurb.textContent = 'Sign in to save and load your lists';
+        _authAreaDiv.appendChild(blurb);
+        const signinDiv = document.createElement('div');
+        signinDiv.className = 'mk4-main-signin-btn';
+        _authAreaDiv.appendChild(signinDiv);
+        renderSignInButton(signinDiv);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Main flow
+// ---------------------------------------------------------------------------
+
+function initializeMainFlow(): void {
+    const abovefold = document.getElementById('abovefold') as HTMLDivElement;
+    abovefold.appendChild(new ccweb.Button({
+        text: 'Build a List',
+        size: 'mediumfixed',
+        click: () => showMk4Builder(),
+    }).container);
+
+    _authAreaDiv = document.createElement('div');
+    _authAreaDiv.className = 'mk4-main-auth-area';
+    abovefold.appendChild(_authAreaDiv);
+
+    renderMainAuthArea();
+
+    // Refresh auth area after sign-in completes (works for first sign-in on this page load).
+    if (!(<any>window)._loginCallback) (<any>window)._loginCallback = [];
+    (<any>window)._loginCallback.push(() => renderMainAuthArea());
+}
+
+function showMainFlow(): void {
+    if (_mainFlow === null) {
+        _mainFlow = new MainFlow();
+        initializeMainFlow();
+    }
+    _mainFlow.show();
+    resizeWindow();
+}
+
+// ---------------------------------------------------------------------------
+// Boot
+// ---------------------------------------------------------------------------
+
+function loadBody(): void {
+    ccweb.Flow.showCallback = () => resizeWindow();
+
+    document.getElementById('cctop').style.display = '';
+    _emblemMenu = document.getElementById('emblemmenu');
+    document.getElementById('ccgearsbutton').onclick = clickMainMenu;
+    document.getElementById('ccmenubutton').onclick  = clickMainMenu;
+
+    g.init();
+    g.restoreSession();
+    window.onresize   = resizeWindow;
+    window.onpopstate = onPopState;
+
+    _dataReady = Mk4Data.load().catch(err => { console.error('Failed to load Mk4 data:', err); throw err; });
+
+    const search = window.location.search.replace(/[?&]fbclid=[^&]*/g, '').replace(/^&/, '?') || null;
+    if (search && route(false)) { /* routed */ }
+    else showMainFlow();
+
+    ccweb.ajax('/blog', gotBlog);
+    resizeWindow();
+}
+
+// Auto-start when the DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadBody);
+} else {
+    loadBody();
 }

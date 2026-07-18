@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Warlist — UI Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Fira+Sans:wght@300;400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS — all theme switches happen here only
+   ============================================================ */
+:root {
+  /* typography */
+  --font-title:  'Geared Slab', 'Lato', serif;
+  --font-head:   'Lato', sans-serif;
+  --font-body:   'Fira Sans', 'Inter', sans-serif;
+
+  /* radius */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  /* motion */
+  --ease: 0.18s ease;
+}
+
+/* DARK theme (default) */
+[data-theme="dark"] {
+  --bg:            #0e1117;
+  --surface:       #161c2b;
+  --surface-2:     #1e2840;
+  --surface-3:     #26334f;
+  --border:        #2c3a56;
+  --border-soft:   rgba(255,255,255,0.06);
+
+  --text:          #dde3f0;
+  --text-2:        #8a9bb5;
+  --text-disabled: #4a5672;
+
+  --accent:        #4d9de8;
+  --accent-dark:   #2270c0;
+  --accent-hover:  #6fb4f5;
+  --accent-dim:    rgba(77,157,232,0.14);
+
+  --gold:          #c8941a;
+  --gold-dim:      rgba(200,148,26,0.14);
+
+  --topbar:        #0a1320;
+  --topbar-border: #1a2a40;
+
+  --danger:        #e05555;
+  --danger-dim:    rgba(224,85,85,0.12);
+  --success:       #4cb87a;
+  --warn:          #c89220;
+
+  --btn-bg:        #1e2840;
+  --btn-border:    #2c3a56;
+  --btn-text:      #c0cce0;
+  --btn-hover:     #26334f;
+
+  --input-bg:      #111827;
+  --input-border:  #2c3a56;
+  --input-focus:   #4d9de8;
+
+  --picker-hover:  rgba(77,157,232,0.09);
+  --picker-sel:    rgba(77,157,232,0.18);
+
+  --pointbar-bg:   #1e2840;
+  --pointbar-fill: #4d9de8;
+  --pointbar-over: #e05555;
+
+  --shadow-card:   0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-float:  0 8px 32px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* LIGHT theme */
+[data-theme="light"] {
+  --bg:            #edf0f5;
+  --surface:       #ffffff;
+  --surface-2:     #f4f6fa;
+  --surface-3:     #e8ecf4;
+  --border:        #d0d8e8;
+  --border-soft:   rgba(0,0,0,0.07);
+
+  --text:          #18243a;
+  --text-2:        #5a6882;
+  --text-disabled: #a0aabe;
+
+  --accent:        #1a6abf;
+  --accent-dark:   #0e4d96;
+  --accent-hover:  #1a80e0;
+  --accent-dim:    rgba(26,106,191,0.10);
+
+  --gold:          #a07010;
+  --gold-dim:      rgba(160,112,16,0.10);
+
+  --topbar:        #0f2040;
+  --topbar-border: #152a56;
+
+  --danger:        #c03333;
+  --danger-dim:    rgba(192,51,51,0.09);
+  --success:       #2a8a52;
+  --warn:          #9a6a10;
+
+  --btn-bg:        #f0f3f8;
+  --btn-border:    #c8d2e4;
+  --btn-text:      #3a4a64;
+  --btn-hover:     #e4e9f4;
+
+  --input-bg:      #ffffff;
+  --input-border:  #c0cce0;
+  --input-focus:   #1a6abf;
+
+  --picker-hover:  rgba(26,106,191,0.07);
+  --picker-sel:    rgba(26,106,191,0.13);
+
+  --pointbar-bg:   #d8dfe9;
+  --pointbar-fill: #1a6abf;
+  --pointbar-over: #c03333;
+
+  --shadow-card:   0 1px 4px rgba(0,0,0,0.10), 0 0 1px rgba(0,0,0,0.06);
+  --shadow-float:  0 4px 24px rgba(0,0,0,0.18), 0 1px 6px rgba(0,0,0,0.10);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100vh;
+  transition: background var(--ease), color var(--ease);
+}
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 48px;
+  display: flex; align-items: center;
+  background: var(--topbar);
+  border-bottom: 1px solid var(--topbar-border);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  padding: 0 16px;
+  gap: 12px;
+}
+
+.topbar-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+
+.topbar-gears {
+  width: 28px; height: 28px;
+  opacity: 0.85;
+  filter: brightness(1.1);
+}
+
+.topbar-title {
+  font-family: var(--font-title);
+  font-size: 22px;
+  color: #fff;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+.topbar-spacer { flex: 1; }
+
+.topbar-user {
+  display: flex; align-items: center; gap: 8px;
+}
+
+.topbar-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.25);
+  overflow: hidden;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 13px; font-weight: 700;
+}
+
+.topbar-email {
+  font-size: 12px; color: rgba(255,255,255,0.6);
+}
+
+/* ---- Theme toggle ---- */
+.theme-toggle {
+  display: flex; align-items: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.theme-btn {
+  background: none; border: none;
+  border-radius: 16px; padding: 4px 10px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.03em;
+  cursor: pointer; color: rgba(255,255,255,0.5);
+  transition: all var(--ease);
+}
+.theme-btn.active {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+.app-layout {
+  display: flex;
+  padding-top: 48px;
+  min-height: 100vh;
+}
+
+/* ---- Sidebar ---- */
+.sidebar {
+  width: 0; /* hidden in list builder — shown on home */
+  flex-shrink: 0;
+}
+
+/* ---- Page sections (tabs in mockup) ---- */
+.page { display: none; padding: 20px; }
+.page.active { display: block; }
+
+/* ---- Nav tabs (mockup only) ---- */
+.mockup-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
+  background: var(--topbar);
+  border-top: 1px solid var(--topbar-border);
+  display: flex; justify-content: center; gap: 0;
+  padding: 0;
+}
+.mnav-btn {
+  background: none; border: none;
+  color: rgba(255,255,255,0.5);
+  padding: 12px 20px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; letter-spacing: 0.04em;
+  border-top: 2px solid transparent;
+  transition: all var(--ease);
+}
+.mnav-btn.active {
+  color: var(--accent);
+  border-top-color: var(--accent);
+}
+.mnav-btn:hover { color: rgba(255,255,255,0.85); }
+
+/* ============================================================
+   CARDS / SURFACES
+   ============================================================ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+.t-heading {
+  font-family: var(--font-head);
+  font-weight: 700; color: var(--text);
+}
+.t-label {
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-2);
+}
+.t-muted { color: var(--text-2); }
+.t-danger { color: var(--danger); }
+.t-success { color: var(--success); }
+.t-accent { color: var(--accent); }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer; transition: all var(--ease);
+  text-decoration: none; white-space: nowrap;
+}
+
+/* Primary */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-dark);
+}
+.btn-primary:hover { background: var(--accent-hover); }
+
+/* Secondary / ghost */
+.btn-ghost {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border-color: var(--btn-border);
+}
+.btn-ghost:hover { background: var(--btn-hover); }
+
+/* Danger */
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+.btn-danger:hover { background: var(--danger-dim); }
+
+/* Icon-only */
+.btn-icon {
+  padding: 6px;
+  background: var(--btn-bg);
+  border-color: var(--btn-border);
+  color: var(--text-2);
+  border-radius: var(--radius-sm);
+}
+.btn-icon:hover { color: var(--text); background: var(--btn-hover); }
+.btn-icon .material-icons { font-size: 18px; line-height: 1; }
+
+/* Size variants */
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-lg { padding: 10px 20px; font-size: 15px; }
+.btn-full { width: 100%; justify-content: center; }
+
+/* Segment control (point limits) */
+.seg-group {
+  display: flex; gap: 4px;
+}
+.seg-btn {
+  flex: 1;
+  padding: 6px 8px; font-size: 13px; font-weight: 600;
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg); color: var(--btn-text);
+  border-radius: var(--radius-sm);
+  cursor: pointer; transition: all var(--ease);
+  text-align: center;
+}
+.seg-btn.active {
+  background: var(--accent);
+  border-color: var(--accent-dark);
+  color: #fff;
+}
+.seg-btn:hover:not(.active) { background: var(--btn-hover); }
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+.input, select.input {
+  width: 100%;
+  padding: 7px 10px;
+  font-family: var(--font-body); font-size: 13px;
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color var(--ease), box-shadow var(--ease);
+  appearance: none;
+}
+.input:focus, select.input:focus {
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.input::placeholder { color: var(--text-disabled); }
+
+select.input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%238a9bb5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+
+/* ============================================================
+   PAGE 1: HOME / SETUP
+   ============================================================ */
+.home-page { max-width: 520px; margin: 0 auto; }
+
+.home-welcome {
+  margin-bottom: 24px;
+}
+.home-welcome h1 {
+  font-family: var(--font-title);
+  font-size: 32px;
+  color: var(--text);
+  margin: 0 0 6px;
+  letter-spacing: 0.5px;
+}
+.home-welcome p {
+  font-size: 14px; color: var(--text-2); margin: 0;
+}
+
+.setup-card { padding: 20px; margin-bottom: 16px; }
+
+.setup-card .setup-title {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-row { margin-bottom: 12px; }
+.form-row .t-label { display: block; margin-bottom: 5px; }
+
+.limit-row { margin: 14px 0; }
+
+.start-row { margin-top: 20px; }
+
+/* Auth area */
+.auth-card { padding: 16px; }
+.auth-blurb { font-size: 13px; color: var(--text-2); margin-bottom: 12px; line-height: 1.5; }
+
+.google-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 9px 16px;
+  background: var(--surface-2); color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 500;
+  cursor: pointer;
+}
+.google-btn:hover { background: var(--btn-hover); }
+.google-btn img { width: 18px; height: 18px; }
+
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 16px 0;
+  color: var(--text-2); font-size: 12px;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1;
+  height: 1px; background: var(--border);
+}
+
+/* Saved lists */
+.saved-list-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+.saved-list-row:last-child { border-bottom: none; }
+
+.saved-pts {
+  width: 40px;
+  font-size: 16px; font-weight: 700;
+  color: var(--accent); text-align: center;
+  flex-shrink: 0;
+}
+.saved-info { flex: 1; min-width: 0; }
+.saved-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.saved-meta { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+
+/* ============================================================
+   NEWS SECTION
+   ============================================================ */
+.news-card { padding: 20px; }
+
+.news-item {
+  display: flex; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+.news-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+.news-date {
+  flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-start;
+  width: 44px;
+  padding-top: 2px;
+}
+.news-date-day {
+  font-size: 20px; font-weight: 700; line-height: 1;
+  color: var(--accent);
+  font-family: var(--font-head);
+}
+.news-date-mon {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-2);
+  margin-top: 2px;
+}
+
+.news-body { flex: 1; min-width: 0; }
+.news-title {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  margin-bottom: 3px;
+  line-height: 1.3;
+}
+.news-snippet {
+  font-size: 12px; color: var(--text-2);
+  line-height: 1.5;
+}
+.news-tag {
+  display: inline-block;
+  margin-top: 5px;
+  padding: 1px 7px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-radius: 10px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.04em;
+}
+
+.news-footer {
+  margin-top: 12px; padding-top: 10px;
+  border-top: 1px solid var(--border-soft);
+  text-align: right;
+}
+.news-link {
+  font-size: 12px; color: var(--accent);
+  text-decoration: none; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 3px;
+}
+.news-link:hover { color: var(--accent-hover); }
+.news-link .material-icons { font-size: 14px; }
+
+/* ============================================================
+   PAGE 2: LIST BUILDER
+   ============================================================ */
+.builder-layout {
+  display: flex; gap: 0;
+  height: calc(100vh - 48px);
+  overflow: hidden;
+}
+
+/* Left panel = list */
+.builder-list {
+  flex: 0 0 320px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.builder-list-header {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  flex-shrink: 0;
+}
+
+.army-badge {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 8px;
+}
+.army-faction-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid rgba(77,157,232,0.3);
+  border-radius: 12px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+}
+.army-name-big {
+  font-family: var(--font-head);
+  font-size: 16px; font-weight: 700;
+  color: var(--text);
+}
+
+/* Point bar */
+.pointbar-wrap { margin-bottom: 4px; }
+.pointbar-track {
+  height: 6px;
+  background: var(--pointbar-bg);
+  border-radius: 3px; overflow: hidden;
+  margin-bottom: 4px;
+}
+.pointbar-fill {
+  height: 100%;
+  background: var(--pointbar-fill);
+  border-radius: 3px;
+  transition: width 0.25s ease;
+}
+.pointbar-fill.over { background: var(--pointbar-over); }
+.pointbar-label {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--text-2);
+}
+.pointbar-label .pts-used { color: var(--text); font-weight: 600; }
+
+.builder-list-scroll {
+  flex: 1; overflow-y: auto; padding: 10px 4px 10px 10px;
+}
+
+/* List sections */
+.list-section { margin-bottom: 14px; }
+
+.list-type-header {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  padding: 0 4px 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.list-type-header::after {
+  content: ''; flex: 1; height: 1px;
+  background: var(--border);
+}
+
+.list-entry {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: default;
+}
+.list-entry:hover { background: var(--picker-hover); }
+
+.entry-name { flex: 1; font-weight: 500; color: var(--text); }
+.entry-cost { font-size: 12px; color: var(--text-2); white-space: nowrap; }
+.entry-type { font-size: 11px; color: var(--text-disabled); }
+.entry-remove {
+  background: none; border: none; padding: 2px;
+  color: var(--text-disabled); cursor: pointer; font-size: 15px;
+  border-radius: var(--radius-sm); line-height: 1;
+  transition: color var(--ease);
+}
+.entry-remove:hover { color: var(--danger); }
+
+.entry-companion {
+  padding-left: 20px;
+  font-style: italic; opacity: 0.7;
+}
+.entry-companion .entry-name { font-weight: 400; }
+
+.entry-bg-btn {
+  font-size: 10px; padding: 2px 6px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.entry-bg-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.list-validation {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px;
+  background: var(--danger-dim);
+  border-left: 3px solid var(--danger);
+  border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--danger);
+  margin: 4px 0;
+}
+.list-validation .material-icons { font-size: 15px; }
+
+/* Builder footer */
+.builder-list-footer {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  flex-shrink: 0;
+}
+
+.save-row {
+  display: flex; gap: 8px; margin-bottom: 8px;
+}
+.list-name-input { flex: 1; }
+
+.export-row { display: flex; gap: 6px; }
+.export-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 6px 4px;
+  background: var(--btn-bg); border: 1px solid var(--btn-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer; color: var(--text-2); font-size: 10px;
+  transition: all var(--ease);
+}
+.export-btn:hover { background: var(--btn-hover); color: var(--text); }
+.export-btn .material-icons { font-size: 16px; }
+
+/* Right panel = picker */
+.builder-picker {
+  flex: 1; min-width: 0;
+  background: var(--surface-2);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.picker-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.picker-search-row {
+  display: flex; gap: 8px;
+}
+
+.search-input-wrap {
+  flex: 1; position: relative;
+}
+.search-input-wrap .material-icons {
+  position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+  font-size: 17px; color: var(--text-2); pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  padding: 7px 10px 7px 32px;
+  font-family: var(--font-body); font-size: 13px;
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+.search-input:focus { border-color: var(--input-focus); box-shadow: 0 0 0 3px var(--accent-dim); }
+.search-input::placeholder { color: var(--text-disabled); }
+
+.picker-scroll { flex: 1; overflow-y: auto; }
+
+.picker-type-header {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-2);
+  padding: 10px 14px 4px;
+  position: sticky; top: 0;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.picker-row {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px;
+  padding: 6px 14px;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 13px;
+  transition: background var(--ease);
+}
+.picker-available { cursor: pointer; }
+.picker-available:hover { background: var(--picker-hover); }
+.picker-unavailable { opacity: 0.4; }
+
+.picker-name { flex: 1; font-weight: 500; color: var(--text); }
+.picker-pts { font-size: 12px; color: var(--text-2); }
+.picker-fa  { font-size: 11px; color: var(--text-disabled); }
+.picker-reason { font-size: 11px; color: var(--danger); font-style: italic; width: 100%; }
+.picker-companion-note { font-size: 11px; color: var(--success); width: 100%; }
+
+/* ============================================================
+   PAGE 3: COMPONENTS SHOWCASE
+   ============================================================ */
+.showcase { max-width: 680px; }
+.show-section { margin-bottom: 32px; }
+.show-section h3 {
+  font-family: var(--font-head); font-size: 14px; font-weight: 700;
+  color: var(--text-2); text-transform: uppercase; letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--border); padding-bottom: 8px; margin: 0 0 16px;
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.swatch-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.swatch {
+  display: flex; flex-direction: column;
+  width: 100px;
+}
+.swatch-color {
+  height: 48px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.swatch-name { font-size: 10px; color: var(--text-2); margin-top: 4px; }
+
+/* ============================================================
+   DIALOGS
+   ============================================================ */
+.dialog-scrim {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(2px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.dialog-scrim.open { opacity: 1; pointer-events: auto; }
+
+.dialog-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-float);
+  padding: 24px;
+  width: 380px; max-width: 92vw;
+  transform: translateY(-8px) scale(0.98);
+  transition: transform 0.2s;
+}
+.dialog-scrim.open .dialog-box { transform: none; }
+
+.dialog-title {
+  font-family: var(--font-head);
+  font-size: 16px; font-weight: 700; color: var(--text);
+  margin: 0 0 6px;
+}
+.dialog-body { font-size: 13px; color: var(--text-2); line-height: 1.6; margin: 0 0 20px; }
+.dialog-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* ============================================================
+   FEEDBACK TOAST
+   ============================================================ */
+.toast {
+  position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+  z-index: 600;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px; color: var(--text);
+  box-shadow: var(--shadow-float);
+  display: flex; align-items: center; gap: 8px;
+  opacity: 0; transition: opacity 0.2s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
+.toast .material-icons { font-size: 16px; color: var(--success); }
+
+/* ============================================================
+   STATUS INDICATORS
+   ============================================================ */
+.status-pass { display: flex; align-items: center; gap: 4px; color: var(--success); font-size: 12px; }
+.status-fail { display: flex; align-items: center; gap: 4px; color: var(--danger); font-size: 12px; }
+.status-warn { display: flex; align-items: center; gap: 4px; color: var(--warn); font-size: 12px; }
+.status-pass .material-icons,
+.status-fail .material-icons,
+.status-warn .material-icons { font-size: 15px; }
+
+/* ============================================================
+   SCROLLBAR STYLING
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-2); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     TOP BAR
+     ============================================================ -->
+<header class="topbar">
+  <a class="topbar-logo" href="#">
+    <img class="topbar-gears" src="img/warlist-mark.svg" alt="Warlist">
+    <span class="topbar-title">Warlist</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-user">
+    <div class="topbar-avatar">J</div>
+    <span class="topbar-email">joshua.spork</span>
+  </div>
+  <div class="theme-toggle">
+    <button class="theme-btn" onclick="setTheme('light')" id="btn-light">Light</button>
+    <button class="theme-btn active" onclick="setTheme('dark')" id="btn-dark">Dark</button>
+  </div>
+</header>
+
+<!-- ============================================================
+     MOCK NAV TABS
+     ============================================================ -->
+<nav class="mockup-nav">
+  <button class="mnav-btn active" onclick="showPage('home')">Home / Setup</button>
+  <button class="mnav-btn" onclick="showPage('builder')">List Builder</button>
+  <button class="mnav-btn" onclick="showPage('components')">Components</button>
+  <button class="mnav-btn" onclick="showDialog()">Dialog Demo</button>
+</nav>
+
+<!-- ============================================================
+     PAGE 1: HOME / SETUP
+     ============================================================ -->
+<div class="page active" id="page-home">
+<div style="padding:20px;">
+<div class="home-page">
+
+  <div class="home-welcome">
+    <h1>Warlist</h1>
+    <p>Mk4 Warmachine army list builder. Pick a faction and start building.</p>
+  </div>
+
+  <!-- New List Card -->
+  <div class="card setup-card">
+    <div class="setup-title">New Mk4 List</div>
+
+    <div class="form-row">
+      <span class="t-label">Faction</span>
+      <select class="input">
+        <option>Cygnar</option>
+        <option>Khador</option>
+        <option>Menoth</option>
+        <option>Cryx</option>
+        <option>Retribution of Scyrah</option>
+        <option>Convergence of Cyriss</option>
+        <option>Crucible Guard</option>
+        <option>Orgoth Sea Raiders</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <span class="t-label">Army</span>
+      <select class="input">
+        <option>Storm Legion</option>
+        <option>Black River Irregulars</option>
+        <option>Gravediggers</option>
+        <option>Mercenaries</option>
+      </select>
+    </div>
+
+    <div class="limit-row">
+      <span class="t-label" style="display:block;margin-bottom:6px;">Point Limit</span>
+      <div class="seg-group">
+        <button class="seg-btn">30</button>
+        <button class="seg-btn">50</button>
+        <button class="seg-btn">75</button>
+        <button class="seg-btn active">100</button>
+      </div>
+    </div>
+
+    <div class="start-row">
+      <button class="btn btn-primary btn-lg btn-full" onclick="showPage('builder')">
+        <span class="material-icons" style="font-size:18px;">construction</span>
+        Start Building
+      </button>
+    </div>
+  </div>
+
+  <!-- My Lists card -->
+  <div class="card setup-card">
+    <div class="setup-title">My Lists</div>
+
+    <!-- Logged-in state -->
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);">Signed in</div>
+          <div style="font-size:11px;color:var(--text-2);">joshua.spork@gmail.com</div>
+        </div>
+        <button class="btn btn-ghost btn-sm">Sign out</button>
+      </div>
+
+      <div class="saved-list-row">
+        <div class="saved-pts">75</div>
+        <div class="saved-info">
+          <div class="saved-name">Haley2 Stormwall Drop</div>
+          <div class="saved-meta">Storm Legion · Last saved 2 days ago</div>
+        </div>
+        <button class="btn btn-primary btn-sm">Load</button>
+        <button class="btn btn-danger btn-sm btn-icon"><span class="material-icons">delete</span></button>
+      </div>
+
+      <div class="saved-list-row">
+        <div class="saved-pts">100</div>
+        <div class="saved-info">
+          <div class="saved-name">Nemo3 Invictus</div>
+          <div class="saved-meta">Storm Legion · Last saved 5 days ago</div>
+        </div>
+        <button class="btn btn-primary btn-sm">Load</button>
+        <button class="btn btn-danger btn-sm btn-icon"><span class="material-icons">delete</span></button>
+      </div>
+
+      <div class="saved-list-row">
+        <div class="saved-pts">50</div>
+        <div class="saved-info">
+          <div class="saved-name">Maddox Hammer Strike</div>
+          <div class="saved-meta">Gravediggers · Last saved 1 week ago</div>
+        </div>
+        <button class="btn btn-primary btn-sm">Load</button>
+        <button class="btn btn-danger btn-sm btn-icon"><span class="material-icons">delete</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- News / Updates card -->
+  <div class="card news-card">
+    <div class="setup-title">Latest Updates</div>
+
+    <div class="news-item">
+      <div class="news-date">
+        <div class="news-date-day">18</div>
+        <div class="news-date-mon">Jun</div>
+      </div>
+      <div class="news-body">
+        <div class="news-title">Orgoth Sea Raiders — Wave 3 Cards</div>
+        <div class="news-snippet">New cards for the Orgoth Sea Raiders are now in the builder, including the Terrorizer heavy warjack and three new unit entries.</div>
+        <span class="news-tag">Data Update</span>
+      </div>
+    </div>
+
+    <div class="news-item">
+      <div class="news-date">
+        <div class="news-date-day">5</div>
+        <div class="news-date-mon">Jun</div>
+      </div>
+      <div class="news-body">
+        <div class="news-title">Steamforged Announces Balance Errata — Season 2</div>
+        <div class="news-snippet">Point cost adjustments for several Cygnar and Khador models. Lists using affected cards will show updated costs after today's data refresh.</div>
+        <span class="news-tag">Errata</span>
+      </div>
+    </div>
+
+    <div class="news-item">
+      <div class="news-date">
+        <div class="news-date-day">22</div>
+        <div class="news-date-mon">May</div>
+      </div>
+      <div class="news-body">
+        <div class="news-title">Dusk House Kallyss Expansion Now Supported</div>
+        <div class="news-snippet">All Dusk House Kallyss army cards are now available in the builder following the official app data release.</div>
+        <span class="news-tag">New Faction</span>
+      </div>
+    </div>
+
+    <div class="news-footer">
+      <a class="news-link" href="#">
+        View all updates <span class="material-icons">arrow_forward</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Auth card (logged-out state) -->
+  <div class="card auth-card" style="display:none">
+    <div class="setup-title">Sign In</div>
+    <p class="auth-blurb">Sign in with Google to save and sync your lists across devices.</p>
+    <button class="google-btn">
+      <svg viewBox="0 0 18 18" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.96L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+      Sign in with Google
+    </button>
+  </div>
+
+</div><!-- .home-page -->
+</div>
+</div><!-- page-home -->
+
+<!-- ============================================================
+     PAGE 2: LIST BUILDER
+     ============================================================ -->
+<div class="page" id="page-builder">
+<div class="builder-layout">
+
+  <!-- Left: Current list -->
+  <div class="builder-list">
+    <div class="builder-list-header">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="showPage('home')">
+          <span class="material-icons" style="font-size:16px;">arrow_back</span>
+          Back
+        </button>
+        <div style="flex:1"></div>
+        <div class="army-faction-tag">Cygnar</div>
+      </div>
+      <div class="army-name-big">Storm Legion · 100pts</div>
+
+      <div class="pointbar-wrap" style="margin-top:10px;">
+        <div class="pointbar-track">
+          <div class="pointbar-fill" style="width:73%"></div>
+        </div>
+        <div class="pointbar-label">
+          <span><span class="pts-used">73</span> / 100 pts</span>
+          <span style="color:var(--success);">27 remaining</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="builder-list-scroll">
+
+      <!-- Leader -->
+      <div class="list-section">
+        <div class="list-type-header">Leader</div>
+        <div class="list-entry">
+          <span class="entry-name">Commander Stryker</span>
+          <span class="entry-cost">0 pts</span>
+          <button class="entry-remove">×</button>
+        </div>
+      </div>
+
+      <!-- Battle Group -->
+      <div class="list-section">
+        <div class="list-type-header">Battle Group</div>
+        <div class="list-entry">
+          <span class="entry-name">Stormwall</span>
+          <span class="entry-cost">19 pts</span>
+          <button class="entry-remove">×</button>
+        </div>
+        <div class="list-entry" style="padding-left:18px;">
+          <span class="entry-name" style="font-size:12px;color:var(--text-2);">Squire</span>
+          <span class="entry-cost">0 pts</span>
+        </div>
+        <div class="list-entry">
+          <span class="entry-name">Hurricane</span>
+          <span class="entry-cost">15 pts</span>
+          <button class="entry-bg-btn">BG</button>
+          <button class="entry-remove">×</button>
+        </div>
+        <div class="list-entry">
+          <span class="entry-name">Centurion</span>
+          <span class="entry-cost">12 pts</span>
+          <button class="entry-remove">×</button>
+        </div>
+      </div>
+
+      <!-- Units -->
+      <div class="list-section">
+        <div class="list-type-header">Units</div>
+        <div class="list-entry">
+          <span class="entry-name">Storm Lances (min)</span>
+          <span class="entry-cost">15 pts</span>
+          <button class="entry-remove">×</button>
+        </div>
+        <div class="list-entry">
+          <span class="entry-name">Stormblades</span>
+          <span class="entry-cost">9 pts</span>
+          <button class="entry-remove">×</button>
+        </div>
+        <div class="list-entry entry-companion">
+          <span class="entry-name">Stormblade Captain</span>
+          <span class="entry-cost">0 pts</span>
+        </div>
+      </div>
+
+      <!-- Solos -->
+      <div class="list-section">
+        <div class="list-type-header">Solos</div>
+        <div class="list-entry">
+          <span class="entry-name">Stormblade Captain</span>
+          <span class="entry-cost">0 pts</span>
+          <button class="entry-remove">×</button>
+        </div>
+        <div class="list-entry">
+          <span class="entry-name">Journeyman Warcaster</span>
+          <span class="entry-cost">3 pts</span>
+          <button class="entry-remove">×</button>
+        </div>
+      </div>
+
+      <!-- Command Cards -->
+      <div class="list-section">
+        <div class="list-type-header">Command Cards <span style="font-size:10px;margin-left:4px;color:var(--text-2);">2 / 5</span></div>
+        <div class="list-entry">
+          <span class="entry-name">Blessing of the Gods</span>
+          <span class="entry-cost">0 pts</span>
+          <button class="entry-remove">×</button>
+        </div>
+      </div>
+
+      <!-- validation example -->
+      <div class="list-validation">
+        <span class="material-icons">warning</span>
+        Battle group not complete (required)
+      </div>
+
+    </div><!-- scroll -->
+
+    <!-- Footer: save + export -->
+    <div class="builder-list-footer">
+      <div class="save-row">
+        <input class="input list-name-input" placeholder="List name…" value="Stryker Storm Drop">
+        <button class="btn btn-primary btn-sm">Save</button>
+      </div>
+      <div class="export-row">
+        <button class="export-btn">
+          <span class="material-icons">content_copy</span>
+          Copy
+        </button>
+        <button class="export-btn">
+          <span class="material-icons">image</span>
+          Image
+        </button>
+        <button class="export-btn">
+          <span class="material-icons">link</span>
+          Link
+        </button>
+        <button class="export-btn">
+          <span class="material-icons">help_outline</span>
+          Help
+        </button>
+      </div>
+    </div>
+  </div><!-- .builder-list -->
+
+  <!-- Right: Card picker -->
+  <div class="builder-picker">
+    <div class="picker-header">
+      <div class="picker-search-row">
+        <div class="search-input-wrap" style="flex:1">
+          <span class="material-icons">search</span>
+          <input class="search-input" placeholder="Search cards…">
+        </div>
+      </div>
+    </div>
+
+    <div class="picker-scroll">
+      <!-- Leaders section -->
+      <div class="picker-type-header">Leaders</div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Commander Coleman Stryker</span>
+        <span class="picker-pts">0 pts</span>
+        <span class="picker-fa">· Leader</span>
+      </div>
+      <div class="picker-row picker-unavailable">
+        <span class="picker-name">Artificer General Nemo</span>
+        <span class="picker-pts">0 pts</span>
+        <span class="picker-fa">· Leader</span>
+        <span class="picker-reason">Leader already selected</span>
+      </div>
+      <div class="picker-row picker-unavailable">
+        <span class="picker-name">Senior Warcaster Maddox</span>
+        <span class="picker-pts">0 pts</span>
+        <span class="picker-fa">· Leader</span>
+        <span class="picker-reason">Leader already selected</span>
+      </div>
+
+      <!-- Warjacks -->
+      <div class="picker-type-header">Warjacks</div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Centurion</span>
+        <span class="picker-pts">12 pts</span>
+        <span class="picker-fa">FA 2</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Cyclone</span>
+        <span class="picker-pts">13 pts</span>
+        <span class="picker-fa">FA 2</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Hurricane</span>
+        <span class="picker-pts">15 pts</span>
+        <span class="picker-fa">FA 1</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Ironclad</span>
+        <span class="picker-pts">7 pts</span>
+        <span class="picker-fa">FA 3</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Lancer</span>
+        <span class="picker-pts">7 pts</span>
+        <span class="picker-fa">FA 3</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Minuteman</span>
+        <span class="picker-pts">8 pts</span>
+        <span class="picker-fa">FA 2</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Stormwall</span>
+        <span class="picker-pts">19 pts</span>
+        <span class="picker-fa">FA 1</span>
+        <span class="picker-companion-note">+ Squire (0 pts, auto-joins)</span>
+      </div>
+      <div class="picker-row picker-unavailable">
+        <span class="picker-name">Triumph</span>
+        <span class="picker-pts">15 pts</span>
+        <span class="picker-fa">FA 1</span>
+        <span class="picker-reason">Field allowance reached</span>
+      </div>
+
+      <!-- Units -->
+      <div class="picker-type-header">Units</div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Storm Lances</span>
+        <span class="picker-pts">15–25 pts</span>
+        <span class="picker-fa">FA 2</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Stormblades</span>
+        <span class="picker-pts">9–15 pts</span>
+        <span class="picker-fa">FA 2</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Stormguard</span>
+        <span class="picker-pts">9–15 pts</span>
+        <span class="picker-fa">FA 2</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Long Gunners</span>
+        <span class="picker-pts">11–17 pts</span>
+        <span class="picker-fa">FA 2</span>
+      </div>
+
+      <!-- Solos -->
+      <div class="picker-type-header">Solos</div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Journeyman Warcaster</span>
+        <span class="picker-pts">3 pts</span>
+        <span class="picker-fa">FA 2</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Stormblade Captain</span>
+        <span class="picker-pts">0 pts</span>
+        <span class="picker-fa">FA 2</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Stormsmith Caller</span>
+        <span class="picker-pts">4 pts</span>
+        <span class="picker-fa">FA 2</span>
+      </div>
+
+      <!-- Command Cards -->
+      <div class="picker-type-header">Command Cards</div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Blessing of the Gods</span>
+        <span class="picker-pts">0 pts</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Arcane Wonder</span>
+        <span class="picker-pts">0 pts</span>
+      </div>
+      <div class="picker-row picker-available">
+        <span class="picker-name">Veteran Leader</span>
+        <span class="picker-pts">0 pts</span>
+      </div>
+    </div><!-- .picker-scroll -->
+
+  </div><!-- .builder-picker -->
+</div><!-- .builder-layout -->
+</div><!-- page-builder -->
+
+<!-- ============================================================
+     PAGE 3: COMPONENT SHOWCASE
+     ============================================================ -->
+<div class="page" id="page-components">
+<div style="padding:20px;">
+<div class="showcase">
+
+  <div class="show-section">
+    <h3>Logo Mark</h3>
+    <div style="display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap;">
+      <!-- Dark bg (topbar context) -->
+      <div style="background:#0a1320;border-radius:8px;padding:16px;display:flex;align-items:center;gap:10px;">
+        <img src="img/warlist-mark.svg" style="width:48px;height:48px;" alt="WL mark">
+        <div style="color:#fff;font-size:20px;font-family:'Lato',sans-serif;font-weight:700;">Warlist</div>
+      </div>
+      <!-- Topbar size -->
+      <div style="background:#0a1320;border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:8px;">
+        <img src="img/warlist-mark.svg" style="width:28px;height:28px;" alt="">
+        <div style="color:#fff;font-size:17px;font-family:'Lato',sans-serif;font-weight:700;">Warlist</div>
+      </div>
+      <!-- Icon-only small -->
+      <div style="background:#0a1320;border-radius:8px;padding:10px;display:flex;align-items:center;gap:8px;">
+        <img src="img/warlist-mark.svg" style="width:32px;height:32px;" alt="WL">
+        <span style="color:rgba(255,255,255,0.4);font-size:11px;">32px</span>
+      </div>
+      <!-- Favicon size -->
+      <div style="background:#0a1320;border-radius:8px;padding:10px;display:flex;align-items:center;gap:8px;">
+        <img src="img/warlist-mark.svg" style="width:16px;height:16px;" alt="WL">
+        <span style="color:rgba(255,255,255,0.4);font-size:11px;">16px (favicon)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="show-section">
+    <h3>Color Tokens</h3>
+    <div class="swatch-row">
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--bg)"></div>
+        <span class="swatch-name">--bg</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--surface)"></div>
+        <span class="swatch-name">--surface</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--surface-2)"></div>
+        <span class="swatch-name">--surface-2</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--surface-3)"></div>
+        <span class="swatch-name">--surface-3</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--accent)"></div>
+        <span class="swatch-name">--accent</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--danger)"></div>
+        <span class="swatch-name">--danger</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--success)"></div>
+        <span class="swatch-name">--success</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--warn)"></div>
+        <span class="swatch-name">--warn</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:var(--topbar)"></div>
+        <span class="swatch-name">--topbar</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="show-section">
+    <h3>Buttons</h3>
+    <div class="btn-row">
+      <button class="btn btn-primary">Primary</button>
+      <button class="btn btn-ghost">Secondary</button>
+      <button class="btn btn-danger">Danger</button>
+      <button class="btn btn-icon"><span class="material-icons">delete</span></button>
+      <button class="btn btn-icon"><span class="material-icons">content_copy</span></button>
+    </div>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="btn btn-primary btn-sm">Small Primary</button>
+      <button class="btn btn-ghost btn-sm">Small Ghost</button>
+      <button class="btn btn-primary btn-lg">Large Primary</button>
+    </div>
+  </div>
+
+  <div class="show-section">
+    <h3>Segment Control</h3>
+    <div class="seg-group" style="max-width:300px;">
+      <button class="seg-btn">30</button>
+      <button class="seg-btn">50</button>
+      <button class="seg-btn">75</button>
+      <button class="seg-btn active">100</button>
+    </div>
+  </div>
+
+  <div class="show-section">
+    <h3>Form Controls</h3>
+    <div style="max-width:320px;display:flex;flex-direction:column;gap:10px;">
+      <input class="input" placeholder="Text input…">
+      <select class="input">
+        <option>Select an option</option>
+        <option>Option A</option>
+        <option>Option B</option>
+      </select>
+      <div class="search-input-wrap">
+        <span class="material-icons">search</span>
+        <input class="search-input" placeholder="Search…">
+      </div>
+    </div>
+  </div>
+
+  <div class="show-section">
+    <h3>Status Indicators</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="status-pass"><span class="material-icons">check_circle</span> List is valid</div>
+      <div class="status-fail"><span class="material-icons">cancel</span> Battle group incomplete</div>
+      <div class="status-warn"><span class="material-icons">warning</span> Over point limit by 3</div>
+    </div>
+  </div>
+
+  <div class="show-section">
+    <h3>Point Bar</h3>
+    <div style="max-width:320px;">
+      <div class="pointbar-wrap">
+        <div class="pointbar-track"><div class="pointbar-fill" style="width:73%"></div></div>
+        <div class="pointbar-label">
+          <span><span class="pts-used">73</span> / 100 pts</span>
+          <span style="color:var(--success);">27 remaining</span>
+        </div>
+      </div>
+      <div class="pointbar-wrap" style="margin-top:12px;">
+        <div class="pointbar-track"><div class="pointbar-fill over" style="width:107%"></div></div>
+        <div class="pointbar-label">
+          <span class="pts-used" style="color:var(--danger);">107 / 100 pts</span>
+          <span style="color:var(--danger);">7 over limit</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="show-section">
+    <h3>Validation Warning</h3>
+    <div class="list-validation" style="max-width:320px;">
+      <span class="material-icons">warning</span>
+      Battle group slot must be filled
+    </div>
+  </div>
+
+  <div class="show-section">
+    <h3>Cards / Surfaces</h3>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:340px;">
+      <div class="card" style="padding:14px;">
+        <div class="t-heading" style="font-size:14px;margin-bottom:6px;">Surface (base card)</div>
+        <p style="margin:0;font-size:13px;color:var(--text-2);">Default surface for panels, dialogs, and content areas.</p>
+      </div>
+      <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;box-shadow:var(--shadow-card);">
+        <div class="t-heading" style="font-size:14px;margin-bottom:6px;">Surface-2 (elevated)</div>
+        <p style="margin:0;font-size:13px;color:var(--text-2);">Used for headers, footers, and secondary panels inside a card.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="show-section">
+    <h3>Typography Scale</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="font-family:var(--font-title);font-size:28px;color:var(--text);">Warlist — Geared Slab 28</div>
+      <div style="font-family:var(--font-head);font-size:20px;font-weight:700;color:var(--text);">Section Header — Lato Bold 20</div>
+      <div style="font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--text);">Sub Header — Lato Bold 16</div>
+      <div style="font-size:14px;color:var(--text);">Body text — Fira Sans 14 — lorem ipsum dolor sit amet</div>
+      <div style="font-size:13px;color:var(--text);">Body small — Fira Sans 13 — Stormwall (19 pts) FA 1</div>
+      <div class="t-label">Label — uppercase 11px</div>
+      <div style="font-size:11px;color:var(--text-2);">Caption / meta — 11px muted</div>
+    </div>
+  </div>
+
+</div><!-- showcase -->
+</div>
+</div><!-- page-components -->
+
+<!-- ============================================================
+     DIALOG DEMO
+     ============================================================ -->
+<div class="dialog-scrim" id="demo-dialog" onclick="closeDialog(event)">
+  <div class="dialog-box">
+    <div class="dialog-title">Confirm Delete</div>
+    <p class="dialog-body">Are you sure you want to delete <strong>"Stryker Storm Drop"</strong>? This cannot be undone.</p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" onclick="closeDialog()">Cancel</button>
+      <button class="btn btn-danger" onclick="closeDialog()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="material-icons">check_circle</span>
+  List copied to clipboard
+</div>
+
+<script>
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('btn-light').classList.toggle('active', t === 'light');
+  document.getElementById('btn-dark').classList.toggle('active', t === 'dark');
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.mnav-btn').forEach((b, i) => {
+    const pages = ['home','builder','components'];
+    b.classList.toggle('active', pages[i] === id);
+  });
+}
+
+function showDialog() {
+  document.getElementById('demo-dialog').classList.add('open');
+}
+function closeDialog(e) {
+  if (!e || e.target === document.getElementById('demo-dialog') || e.type !== 'click') {
+    document.getElementById('demo-dialog').classList.remove('open');
+  }
+}
+
+// Seg btn interaction
+document.querySelectorAll('.seg-group').forEach(g => {
+  g.querySelectorAll('.seg-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      g.querySelectorAll('.seg-btn').forEach(bb => bb.classList.remove('active'));
+      b.classList.add('active');
+    });
+  });
+});
+</script>
+
+</body>
+</html>

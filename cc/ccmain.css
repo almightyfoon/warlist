@@ -634,45 +634,58 @@ font-size: 16pt;
 }
 
 
-.ccgears 
+.ccgears
 {
-    display: inline-block;
-    width: 50px;
-    height: 30px;
-    background: url(img/gears50.png);
-    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
     cursor: pointer;
+}
+
+.ccgears img
+{
+    width: 28px;
+    height: 28px;
+    opacity: 0.85;
+    filter: brightness(1.1);
 }
 
 .ccmenu
 {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 .ccmenu i
 {
-    color: white;
+    color: rgba(255,255,255,0.75);
     font-size: 22px;
-    position: relative;
-    top: -4px;
     cursor: pointer;
+    line-height: 1;
+}
+
+.ccmenu i:hover
+{
+    color: #fff;
 }
 
 #cctitle
 {
-    display: inline-block;
     color: white;
     font-family: 'Geared Slab';
-    font-size: 26px;
-    /* text-shadow: 0px 0px 1px black, 1px 1px 2px black; */
-    margin-left: 8px;
-    /* margin-top: -6px; */
-    z-index: 4;
-
-    width: calc(100% - 112px);
-
-    position: relative;
-    top: -5px;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    margin-left: 10px;
+    line-height: 1;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -805,10 +818,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b5bdc8', end
 
 #cctitlemenu
 {
-    margin-left: auto;
-    margin-right: auto;
-    /* width: 513px; */
-    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0 12px;
+    box-sizing: border-box;
 }
 
 #userPic
@@ -1095,25 +1109,18 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#828c95', end
 #cctop
 {
     position: fixed;
-    /* width: 100%; */
-    width: calc(100vw);
-    height: 30px;
-    /* border-bottom: 1px solid black; */
-    top: 0px;
-    left: 0px;
+    width: 100vw;
+    height: 48px;
+    top: 0;
+    left: 0;
     z-index: 100;
 
-    display: inline-block;
+    display: flex;
+    align-items: center;
 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);    
-
-    background-color: var(--dark-color);
-/* background: #828c95;
-background: -moz-linear-gradient(top,  #828c95 96%, #828c95 96%, #b5bdc8 97%, #b5bdc8 97%, #28343b 100%);
-background: -webkit-linear-gradient(top,  #828c95 96%,#828c95 96%,#b5bdc8 97%,#b5bdc8 97%,#28343b 100%);
-background: linear-gradient(to bottom,  #828c95 96%,#828c95 96%,#b5bdc8 97%,#b5bdc8 97%,#28343b 100%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#828c95', endColorstr='#28343b',GradientType=0 ); */
-
+    background: var(--topbar);
+    border-bottom: 1px solid var(--topbar-border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
 
 .mmsep
@@ -3095,4 +3102,468 @@ div.formTH .typedrop {
     position: absolute;
     right: 3px;
     top: -2px;
+}
+/* =========================================================
+   Mk4 List Builder
+   ========================================================= */
+
+.mk4builder .mk4builder-inner {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 8px;
+    padding-top: 56px;
+}
+
+/* Left = picker (sticky, scrollable independently) */
+.mk4-left {
+    flex: 1 1 0;
+    min-width: 220px;
+    position: sticky;
+    top: 8px;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+}
+
+/* Right = list (natural page scroll) */
+.mk4-right {
+    flex: 0 0 360px;
+    min-width: 0;
+}
+
+.mk4-back-btn {
+    background: none;
+    border: none;
+    color: var(--link-color, #4a9);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 4px 0 8px;
+}
+
+.mk4-section-title {
+    font-family: var(--header-font);
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.mk4-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--subheader-color, #888);
+    margin: 10px 0 4px;
+}
+
+.mk4-select {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 14px;
+    background: var(--input-bg, #fff);
+    color: var(--text-color, #222);
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 4px;
+}
+
+.mk4-limits {
+    display: flex;
+    gap: 8px;
+}
+
+.mk4-limit-btn {
+    flex: 1;
+    padding: 6px;
+    font-size: 13px;
+    background: var(--button-bg, #eee);
+    color: var(--text-color, #222);
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 4px;
+    cursor: pointer;
+}
+.mk4-limit-btn.active {
+    background: var(--accent-color, #4a9);
+    color: #fff;
+    border-color: transparent;
+}
+
+.mk4-start-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 10px;
+    font-size: 15px;
+    background: var(--accent-color, #4a9);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.mk4-start-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* List view */
+
+.mk4-list-header {
+    font-family: var(--header-font);
+    font-size: 16px;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-color, #ccc);
+}
+
+.mk4-pointbar {
+    height: 8px;
+    background: var(--border-color, #ddd);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+.mk4-pointbar-fill {
+    height: 100%;
+    background: var(--accent-color, #4a9);
+    transition: width 0.2s;
+}
+.mk4-pointbar-fill.over { background: #c44; }
+
+.mk4-pointbar-label {
+    font-size: 12px;
+    color: var(--subheader-color, #888);
+    margin-bottom: 12px;
+}
+
+.mk4-list-section { margin-bottom: 10px; }
+
+.mk4-type-header {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--subheader-color, #888);
+    margin: 6px 0 2px;
+}
+
+.mk4-collapsible-header {
+    cursor: pointer;
+    user-select: none;
+}
+.mk4-collapsible-header:hover { opacity: 0.8; }
+
+.mk4-collapse-toggle {
+    font-style: normal;
+    font-size: 10px;
+}
+
+.mk4-picker-section { margin-bottom: 2px; }
+.mk4-picker-section-body { /* visible by default — JS hides if collapsed */ }
+
+.mk4-entry-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+.mk4-entry-row:hover { background: var(--hover-bg, rgba(0,0,0,0.05)); }
+.mk4-entry-indented { padding-left: 20px; }
+.mk4-entry-companion { opacity: 0.75; font-style: italic; }
+
+.mk4-bg-btn {
+    background: none; border: 1px solid var(--subheader-color, #888);
+    border-radius: 3px; color: var(--subheader-color, #888);
+    cursor: pointer; font-size: 11px; padding: 1px 5px; line-height: 1.4;
+}
+.mk4-bg-btn:hover { border-color: var(--link-color, #46a); color: var(--link-color, #46a); }
+.mk4-bg-btn-add { margin: 2px 6px 4px; display: inline-block; }
+
+.mk4-bg-banner {
+    background: var(--hover-bg, rgba(70,100,170,0.12));
+    border-bottom: 1px solid var(--subheader-color, #888);
+    padding: 6px 8px; font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+}
+.mk4-bg-exit {
+    background: none; border: none; cursor: pointer; font-size: 11px;
+    color: var(--link-color, #46a); padding: 0;
+}
+
+/* Modular config panel */
+.mk4-config-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 8px; font-size: 12px; font-weight: 600;
+    border-bottom: 1px solid var(--subheader-color, #888);
+    background: var(--hover-bg, rgba(70,100,170,0.12));
+}
+.mk4-config-title { flex: 1; }
+.mk4-config-group {
+    padding: 6px 8px 2px;
+    border-bottom: 1px solid var(--border-color, #333);
+}
+.mk4-config-slot-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--subheader-color, #888);
+    margin-bottom: 3px;
+}
+.mk4-config-option {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 6px; margin: 2px 0; border-radius: 4px; cursor: pointer;
+    border: 1px solid transparent;
+}
+.mk4-config-option:hover { background: var(--hover-bg, rgba(255,255,255,0.05)); }
+.mk4-config-selected {
+    border-color: var(--link-color, #46a);
+    background: var(--hover-bg, rgba(70,100,170,0.15));
+}
+.mk4-config-opt-name { flex: 1; font-size: 13px; }
+.mk4-config-opt-cost { font-size: 12px; color: var(--subheader-color, #888); }
+.mk4-config-add {
+    display: block; width: calc(100% - 16px); margin: 8px;
+    padding: 8px; background: var(--link-color, #46a); color: #fff;
+    border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600;
+}
+.mk4-config-add:hover { opacity: 0.85; }
+
+.mk4-entry-name { flex: 1; }
+.mk4-entry-type { font-size: 11px; color: var(--subheader-color, #888); }
+.mk4-entry-cost { font-size: 12px; color: var(--subheader-color, #888); white-space: nowrap; }
+
+.mk4-entry-remove {
+    background: none;
+    border: none;
+    color: #c44;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 2px;
+    line-height: 1;
+}
+
+.mk4-empty-slot {
+    font-size: 12px;
+    color: var(--subheader-color, #888);
+    font-style: italic;
+    padding: 4px 6px;
+}
+
+.mk4-note {
+    font-size: 11px;
+    color: var(--accent-color, #4a9);
+    padding: 2px 6px;
+}
+
+.mk4-save-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color, #ccc);
+}
+.mk4-list-name {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 13px;
+    background: var(--input-bg, #fff);
+    color: var(--text-color, #222);
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 4px;
+}
+.mk4-save-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+    background: var(--accent-color, #4a9);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.mk4-export-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+.mk4-export-btn {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 13px;
+    background: var(--card-bg, #f5f5f5);
+    color: var(--text-color, #222);
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 4px;
+    cursor: pointer;
+}
+.mk4-export-btn:hover { background: var(--hover-bg, #e8e8e8); }
+
+/* Picker (right panel) */
+
+.mk4-search-row { margin-bottom: 8px; }
+.mk4-search {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 14px;
+    background: var(--input-bg, #fff);
+    color: var(--text-color, #222);
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.mk4-picker-list {
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+}
+
+.mk4-picker-type-header {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--subheader-color, #888);
+    padding: 8px 6px 2px;
+    position: sticky;
+    top: 0;
+    background: var(--bg-color, #fff);
+}
+
+.mk4-picker-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 3px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06));
+}
+
+.mk4-picker-available { cursor: pointer; }
+.mk4-picker-available:hover { background: var(--hover-bg, rgba(0,0,0,0.06)); }
+.mk4-picker-unavailable { opacity: 0.45; }
+
+.mk4-picker-name { flex: 1; font-weight: 500; }
+.mk4-picker-cost { font-size: 12px; color: var(--subheader-color, #888); }
+.mk4-picker-fa   { font-size: 11px; color: var(--subheader-color, #aaa); }
+.mk4-picker-reason {
+    font-size: 11px;
+    color: #c44;
+    font-style: italic;
+    width: 100%;
+}
+.mk4-picker-companion {
+    font-size: 11px;
+    color: var(--accent-color, #4a9);
+    width: 100%;
+}
+
+.mk4-picker-empty {
+    padding: 16px;
+    text-align: center;
+    color: var(--subheader-color, #888);
+    font-style: italic;
+}
+
+/* Saved-list rows (builder setup + main page) */
+.mk4-saved-list-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 4px;
+    border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06));
+}
+.mk4-saved-list-name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.mk4-list-load-btn {
+    font-size: 12px;
+    padding: 2px 10px;
+    background: var(--link-color, #46a);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.mk4-list-load-btn:hover { opacity: 0.85; }
+.mk4-list-delete-btn {
+    font-size: 12px;
+    padding: 2px 7px;
+    background: transparent;
+    border: 1px solid var(--border-color, rgba(0,0,0,0.2));
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--subheader-color, #888);
+}
+.mk4-list-delete-btn:hover { color: #c44; border-color: #c44; }
+
+/* Setup separator */
+.mk4-setup-sep {
+    border: none;
+    border-top: 1px solid var(--border-color, rgba(0,0,0,0.12));
+    margin: 14px 0 10px;
+}
+
+/* Save status feedback */
+.mk4-save-status {
+    font-size: 12px;
+    color: var(--link-color, #46a);
+    font-style: italic;
+    margin-top: 4px;
+}
+
+/* Main page auth / My Lists area */
+.mk4-main-auth-area {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--card-bg, #f2f2f2);
+    border-radius: 4px;
+    max-width: 420px;
+}
+.mk4-signin-blurb {
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: var(--card-textcolor, #333);
+}
+.mk4-main-signin-btn {
+    display: inline-block;
+}
+
+/* Auth header row (title + email + sign-out) */
+.mk4-auth-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.mk4-auth-userinfo {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.mk4-auth-email {
+    font-size: 11px;
+    color: var(--subheader-color, #888);
+}
+.mk4-signout-btn {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: transparent;
+    border: 1px solid var(--border-color, rgba(0,0,0,0.2));
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--subheader-color, #888);
+}
+.mk4-signout-btn:hover { color: #c44; border-color: #c44; }
+
+/* List validation warnings */
+.mk4-list-warnings {
+    margin: 8px 0 4px;
+    padding: 6px 10px;
+    background: rgba(200, 80, 0, 0.08);
+    border-left: 3px solid #c84;
+    border-radius: 2px;
+}
+.mk4-list-warning {
+    font-size: 12px;
+    color: #a64;
+    padding: 1px 0;
+}
+.mk4-save-warning {
+    color: #a64 !important;
 }

@@ -1,17 +1,18 @@
 {
-    "compileOnSave": true,
     "compilerOptions": {
         "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
         "target": "es6",
-        "outFile": "ccmain.js",
-        "sourceMap": true,
-        "module": "amd"
+        "lib": ["es2019", "dom"],
+        "rootDir": "..",
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "strictNullChecks": false,
+        "types": []
     },
     "files": [
-        "ccmain.ts",
-        "ccstorage.ts",
-        "cctourn.ts"
+        "globals.d.ts",
+        "ccmain.ts"
     ]
 }
