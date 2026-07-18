@@ -1,7 +1,11 @@
 {
-    email {$CADDY_EMAIL}
+	email {$CADDY_EMAIL}
 }
 
 {$DOMAIN} {
-    reverse_proxy backend:8080
+	reverse_proxy backend:8080
+}
+
+{$APEX_DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
 }

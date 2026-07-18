@@ -11,6 +11,7 @@ services:
       - caddy_config:/config
     environment:
       DOMAIN: ${DOMAIN}
+      APEX_DOMAIN: ${APEX_DOMAIN}
       CADDY_EMAIL: ${CADDY_EMAIL}
     depends_on:
       - backend
