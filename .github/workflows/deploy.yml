@@ -114,6 +114,12 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      # The EC2 host is a t4g.micro (ARM64/Graviton); this runner is amd64.
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
       - name: Build image
         id: build
         env:
@@ -121,7 +127,7 @@ jobs:
           TAG: ${{ github.sha }}
         run: |
           IMAGE="$REGISTRY/$ECR_REPOSITORY:$TAG"
-          docker build -t "$IMAGE" -t "$REGISTRY/$ECR_REPOSITORY:latest" .
+          docker build --platform linux/arm64 -t "$IMAGE" -t "$REGISTRY/$ECR_REPOSITORY:latest" .
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
           echo "registry=$REGISTRY" >> "$GITHUB_OUTPUT"
 
@@ -158,6 +164,7 @@ jobs:
         run: |
           COMPOSE_B64=$(base64 -w0 docker-compose.yml)
           CADDY_B64=$(base64 -w0 Caddyfile)
+          SCHEMA_B64=$(base64 -w0 db/schema.sql)
 
           cat > /tmp/ssm-params.json << JSON
           {
@@ -166,9 +173,11 @@ jobs:
               "mkdir -p /srv/warlist",
               "echo '$COMPOSE_B64' | base64 -d > /srv/warlist/docker-compose.yml",
               "echo '$CADDY_B64' | base64 -d > /srv/warlist/Caddyfile",
+              "echo '$SCHEMA_B64' | base64 -d > /srv/warlist/schema.sql",
               "aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $REGISTRY",
               "cd /srv/warlist",
               "sed -i '/^BACKEND_IMAGE=/d' .env",
+              "printf '\n' >> .env",
               "echo BACKEND_IMAGE=$IMAGE >> .env",
               "docker compose pull backend",
               "docker compose up -d --no-build"

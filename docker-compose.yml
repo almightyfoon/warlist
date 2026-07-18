@@ -55,7 +55,7 @@ services:
       # On first run MySQL initialises the directory automatically.
       # On EC2: this should live on a persistent EBS volume.
       - /srv/warlist/db:/var/lib/mysql
-      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "warlist", "-p${DB_PASSWORD}"]
       interval: 5s
