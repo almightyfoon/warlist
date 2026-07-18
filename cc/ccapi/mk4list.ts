@@ -116,6 +116,16 @@ const ATTACH_LIMITS: Partial<Record<string, number>> = {
     'Weapon Attachment':  3,
 };
 
+const MAX_DEFENSES = 3;
+
+function defenseCountInList(list: Mk4List): number {
+    let n = 0;
+    for (const e of list.entries) {
+        if (Mk4Data.cardById.get(e.cardId)?.cardType === 'Defense') n++;
+    }
+    return n;
+}
+
 // Greedy assignment: for each attachment entry (in list order) find the first
 // target unit instance that still has a slot. Returns unit entry → attachments.
 // Used by both canAdd() and the renderer so they always agree.
@@ -224,6 +234,9 @@ export function canAdd(list: Mk4List, cardId: string,
                 : 'All eligible units are at max weapon attachments',
         };
     }
+
+    if (card.cardType === 'Defense' && defenseCountInList(list) >= MAX_DEFENSES)
+        return { ok: false, reason: `Max ${MAX_DEFENSES} defenses per list` };
 
     const army      = Mk4Data.armyById.get(list.armyId);
     const companions = army ? Mk4Data.companionsFor(card, list.armyId) : [];

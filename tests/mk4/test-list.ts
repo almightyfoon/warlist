@@ -172,6 +172,32 @@ test('second true merc blocked', () => {
 });
 
 // ---------------------------------------------------------------------------
+// canAdd — defenses
+//   c527  Barrier      Defense  General  cost:2
+//   c529  Fire Pit     Defense  General  cost:1
+//   c530  Powder Keg   Defense  General  cost:1
+//   c531  Spike Trap   Defense  General  cost:1
+// ---------------------------------------------------------------------------
+console.log('\ncanAdd — defenses');
+
+test('third defense allowed', () => {
+    const list = addCard(addCard(makeList(), 'c527'), 'c527');
+    ok(canAdd(list, 'c527').ok, 'Should allow 3rd defense');
+});
+
+test('fourth defense blocked', () => {
+    let list = makeList();
+    for (let i = 0; i < 3; i++) list = addCard(list, 'c527');
+    ok(!canAdd(list, 'c527').ok, 'Should block 4th defense');
+    strictEqual(list.entries.length, 3);
+});
+
+test('defense cap is shared across different defense cards', () => {
+    const list = addCard(addCard(addCard(makeList(), 'c527'), 'c529'), 'c530');
+    ok(!canAdd(list, 'c531').ok, 'Different Defense cards should share the same cap');
+});
+
+// ---------------------------------------------------------------------------
 // addCard
 // ---------------------------------------------------------------------------
 console.log('\naddCard');
