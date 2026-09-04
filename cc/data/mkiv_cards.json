@@ -31580,7 +31580,6 @@
       "c1664",
       "c1657",
       "c1665",
-      "c1688",
       "c1689",
       "c1690"
     ]
@@ -31837,7 +31836,6 @@
       "c1664",
       "c1657",
       "c1665",
-      "c1688",
       "c1689",
       "c1690"
     ]
@@ -32428,6 +32426,87 @@
     ],
     "keywordsIds": [
       "k188"
+    ]
+  },
+  {
+    "id": "c1703",
+    "name": "Revenger",
+    "faction": "Protectorate of Menoth",
+    "factionId": "f15",
+    "cardType": "Warjack",
+    "pointCost": 0,
+    "fieldAllowance": "4",
+    "isUnlimited": false,
+    "armyIds": [
+      "a42"
+    ],
+    "keywordsIds": [
+      "k188"
+    ],
+    "hardPoints": [
+      {
+        "label": "Head",
+        "options": [
+          {
+            "name": "Arc Node",
+            "pointCost": 1
+          },
+          {
+            "name": "Defensive",
+            "pointCost": 1
+          },
+          {
+            "name": "Flame Trail",
+            "pointCost": 1
+          },
+          {
+            "name": "Paladin",
+            "pointCost": 1
+          }
+        ]
+      },
+      {
+        "label": "Left Arm",
+        "options": [
+          {
+            "name": "Battle Mace",
+            "pointCost": 2
+          },
+          {
+            "name": "Grenade Launcher",
+            "pointCost": 3
+          },
+          {
+            "name": "Purifier",
+            "pointCost": 2
+          },
+          {
+            "name": "Repulsor Shield",
+            "pointCost": 3
+          }
+        ]
+      },
+      {
+        "label": "Right Arm",
+        "options": [
+          {
+            "name": "Blazer",
+            "pointCost": 3
+          },
+          {
+            "name": "Halberd",
+            "pointCost": 4
+          },
+          {
+            "name": "Light Immolator",
+            "pointCost": 3
+          },
+          {
+            "name": "Skyhammer",
+            "pointCost": 5
+          }
+        ]
+      }
     ]
   }
 ]

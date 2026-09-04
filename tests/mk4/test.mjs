@@ -59,8 +59,8 @@ function test(name, fn) {
 // ---------------------------------------------------------------------------
 console.log('\nData integrity — counts');
 
-test('1696 live cards total', () => {
-    strictEqual(cards.length, 1696);
+test('1697 live cards total', () => {
+    strictEqual(cards.length, 1697);
 });
 
 test('41 armies total', () => {
