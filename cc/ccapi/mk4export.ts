@@ -47,9 +47,7 @@ export function listToText(list: Mk4List, listName?: string): string {
             if (entry.battleGroupLeader !== undefined) continue;
             const c = Mk4Data.cardById.get(entry.cardId);
             if (!c || !COHORT_TYPES.has(c.cardType)) continue;
-            const cost = entry.slotSelections
-                ? Mk4Data.configuredCost(c, entry.slotSelections)
-                : Mk4Data.pointCost(c);
+            const cost = Mk4Data.entryCost(c, entry.slotSelections);
             lines.push(String(cost).padEnd(12) + c.name);
             lines.push(...hpLines(c, entry.slotSelections));
         }
@@ -77,11 +75,7 @@ export function listToText(list: Mk4List, listName?: string): string {
 
         for (const entry of standalone) {
             const c        = Mk4Data.cardById.get(entry.cardId);
-            const cardCost = c
-                ? (entry.slotSelections
-                    ? Mk4Data.configuredCost(c, entry.slotSelections)
-                    : Mk4Data.pointCost(c))
-                : 0;
+            const cardCost = c ? Mk4Data.entryCost(c, entry.slotSelections) : 0;
             const compCost = (entry.companionCardIds ?? []).reduce((s, id) => {
                 const cc = Mk4Data.cardById.get(id);
                 return s + (cc ? Mk4Data.pointCost(cc) : 0);
@@ -102,11 +96,7 @@ export function listToText(list: Mk4List, listName?: string): string {
             if (c?.battleGroupSize) {
                 for (const e of list.entries.filter(x => x.battleGroupLeader === entry.cardId)) {
                     const bc   = Mk4Data.cardById.get(e.cardId);
-                    const bcPc = bc
-                        ? (e.slotSelections
-                            ? Mk4Data.configuredCost(bc, e.slotSelections)
-                            : Mk4Data.pointCost(bc))
-                        : 0;
+                    const bcPc = bc ? Mk4Data.entryCost(bc, e.slotSelections) : 0;
                     lines.push(String(bcPc).padEnd(12) + (bc?.name ?? e.cardId));
                     if (bc) lines.push(...hpLines(bc, e.slotSelections));
                 }
