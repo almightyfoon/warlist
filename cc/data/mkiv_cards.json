@@ -2306,7 +2306,7 @@
   {
     "id": "c141",
     "name": "Railless Interceptor",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Battle Engine",
     "pointCost": 12,
@@ -2322,7 +2322,7 @@
   {
     "id": "c142",
     "name": "Crucible Guard Infantry Officer & Standard",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Command Attachment",
     "pointCost": 3,
@@ -2341,7 +2341,7 @@
   {
     "id": "c143",
     "name": "Crucible Guard Rocketman Captain",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Command Attachment",
     "pointCost": 3,
@@ -2361,7 +2361,7 @@
   {
     "id": "c144",
     "name": "Ascendant Mentalist",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 4,
@@ -2377,7 +2377,7 @@
   {
     "id": "c145",
     "name": "Aurum Ominus Alyce Marc",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 5,
@@ -2393,7 +2393,7 @@
   {
     "id": "c146",
     "name": "Crucible Guard Mechanik",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 1,
@@ -2409,7 +2409,7 @@
   {
     "id": "c147",
     "name": "Doctor Alejandro Mosby",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 4,
@@ -2425,7 +2425,7 @@
   {
     "id": "c148",
     "name": "Dragon's Breath Rocket",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 4,
@@ -2441,7 +2441,7 @@
   {
     "id": "c149",
     "name": "Gorman di Wulfe, Revolutionary Agent",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 3,
@@ -2457,7 +2457,7 @@
   {
     "id": "c150",
     "name": "Gorman di Wulfe, Rogue Alchemist",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 4,
@@ -2471,7 +2471,7 @@
   {
     "id": "c151",
     "name": "Gorman the Mad",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 3,
@@ -2485,7 +2485,7 @@
   {
     "id": "c152",
     "name": "Hutchuk, Ogrun Bounty Hunter",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 4,
@@ -2501,7 +2501,7 @@
   {
     "id": "c153",
     "name": "Mr. Clogg",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 0,
@@ -2517,7 +2517,7 @@
   {
     "id": "c154",
     "name": "Prospero",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 3,
@@ -2533,7 +2533,7 @@
   {
     "id": "c155",
     "name": "Rocketman Ace",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 3,
@@ -2549,7 +2549,7 @@
   {
     "id": "c156",
     "name": "Rocketman Stinger",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 3,
@@ -2565,7 +2565,7 @@
   {
     "id": "c157",
     "name": "Trancer",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Solo",
     "pointCost": 2,
@@ -2581,7 +2581,7 @@
   {
     "id": "c158",
     "name": "Combat Alchemists",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Unit",
     "pointCost": 5,
@@ -2597,7 +2597,7 @@
   {
     "id": "c159",
     "name": "Containment Operatives",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Unit",
     "pointCost": 6,
@@ -2613,7 +2613,7 @@
   {
     "id": "c160",
     "name": "Crucible Guard Assault Troopers",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Unit",
     "pointCost": 8,
@@ -2629,7 +2629,7 @@
   {
     "id": "c161",
     "name": "Crucible Guard Infantry",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Unit",
     "pointCost": 7,
@@ -2645,7 +2645,7 @@
   {
     "id": "c162",
     "name": "Crucible Guard Rocketmen",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Unit",
     "pointCost": 6,
@@ -2661,7 +2661,7 @@
   {
     "id": "c163",
     "name": "Crucible Guard Storm Troopers",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Unit",
     "pointCost": 9,
@@ -2677,7 +2677,7 @@
   {
     "id": "c164",
     "name": "Failed Experiments",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Unit",
     "pointCost": 8,
@@ -2693,7 +2693,7 @@
   {
     "id": "c165",
     "name": "Rocketmen Gunners",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Unit",
     "pointCost": 5,
@@ -2709,7 +2709,7 @@
   {
     "id": "c166",
     "name": "The Triumvirate",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Unit",
     "pointCost": 10,
@@ -2725,7 +2725,7 @@
   {
     "id": "c167",
     "name": "Aurum Adeptus Syvestro",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warcaster",
     "pointCost": 0,
@@ -2741,7 +2741,7 @@
   {
     "id": "c168",
     "name": "Aurum Legate Lukas di Morray",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warcaster",
     "pointCost": 0,
@@ -2757,7 +2757,7 @@
   {
     "id": "c169",
     "name": "Aurum Lucanum Athanor Locke",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warcaster",
     "pointCost": 0,
@@ -2773,7 +2773,7 @@
   {
     "id": "c170",
     "name": "Captain Eira Mackay",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warcaster",
     "pointCost": 0,
@@ -2789,7 +2789,7 @@
   {
     "id": "c171",
     "name": "Major Aline Bennet",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warcaster",
     "pointCost": 0,
@@ -2805,7 +2805,7 @@
   {
     "id": "c172",
     "name": "Marshal General Baldwin Gearhart",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warcaster",
     "pointCost": 0,
@@ -2821,7 +2821,7 @@
   {
     "id": "c173",
     "name": "Apollo",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warjack",
     "pointCost": 11,
@@ -2837,7 +2837,7 @@
   {
     "id": "c174",
     "name": "Liberator",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warjack",
     "pointCost": 9,
@@ -2853,7 +2853,7 @@
   {
     "id": "c175",
     "name": "Retaliator",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warjack",
     "pointCost": 8,
@@ -2869,7 +2869,7 @@
   {
     "id": "c176",
     "name": "Suppressor",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warjack",
     "pointCost": 12,
@@ -2885,7 +2885,7 @@
   {
     "id": "c177",
     "name": "Toro",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warjack",
     "pointCost": 10,
@@ -2901,7 +2901,7 @@
   {
     "id": "c178",
     "name": "Vanguard",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warjack",
     "pointCost": 9,
@@ -2917,7 +2917,7 @@
   {
     "id": "c179",
     "name": "Vindicator",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warjack",
     "pointCost": 13,
@@ -2933,7 +2933,7 @@
   {
     "id": "c180",
     "name": "Vulcan",
-    "faction": "Crucible Guard",
+    "faction": "Three Crown Alliance",
     "factionId": "f3",
     "cardType": "Warjack",
     "pointCost": 28,

@@ -125,7 +125,7 @@
   },
   {
     "id": "a7",
-    "name": "Convergence of Cyriss",
+    "name": "Clockwork Legions",
     "factionId": "f2",
     "isUnlimited": false,
     "includedCardIds": [
@@ -360,7 +360,7 @@
   },
   {
     "id": "a18",
-    "name": "Grymkin",
+    "name": "Wicked Harvest",
     "factionId": "f8",
     "isUnlimited": false,
     "includedCardIds": [
@@ -411,7 +411,7 @@
   },
   {
     "id": "a21",
-    "name": "Infernals",
+    "name": "Nonokrian Order",
     "factionId": "f9",
     "isUnlimited": false,
     "includedCardIds": [

@@ -294,24 +294,24 @@ test('5th Division has expected card count (41 faction + 4 mercs)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Infernals
+// Nonokrian Order (Infernals)
 // ---------------------------------------------------------------------------
-console.log('\nInfernals');
+console.log('\nNonokrian Order');
 
-const infernalsArmy = armies.find(a => a.name === 'Infernals');
-const infernalsAll  = armies.filter(a => a.name === 'Infernals');
+const infernalsArmy = armies.find(a => a.name === 'Nonokrian Order');
+const infernalsAll  = armies.filter(a => a.name === 'Nonokrian Order');
 
-test('exactly one Infernals army', () => {
-    strictEqual(infernalsAll.length, 1, `Found ${infernalsAll.length} Infernals armies`);
+test('exactly one Nonokrian Order army', () => {
+    strictEqual(infernalsAll.length, 1, `Found ${infernalsAll.length} Nonokrian Order armies`);
 });
 
-test('Infernals uses k61 keyword filter', () => {
-    ok(infernalsArmy, 'Infernals army not found');
+test('Nonokrian Order uses k61 keyword filter', () => {
+    ok(infernalsArmy, 'Nonokrian Order army not found');
     ok(infernalsArmy.includedKeywordsIds.includes('k61'),
-        'Infernals should use k61 keyword');
+        'Nonokrian Order should use k61 keyword');
 });
 
-test('all k61 cards available in Infernals', () => {
+test('all k61 cards available in Nonokrian Order', () => {
     const k61Cards = cards.filter(c =>
         (c.keywordsIds ?? []).includes('k61') && !c.companionOf &&
         !SCENARIO_TYPES.has(c.cardType)
@@ -319,7 +319,7 @@ test('all k61 cards available in Infernals', () => {
     ok(k61Cards.length > 0, 'No k61 cards found');
     const available = new Set(availableCards(infernalsArmy).map(c => c.id));
     const missing = k61Cards.filter(c => !available.has(c.id));
-    strictEqual(missing.length, 0, `k61 cards missing from Infernals: ${missing.map(c => c.name).join(', ')}`);
+    strictEqual(missing.length, 0, `k61 cards missing from Nonokrian Order: ${missing.map(c => c.name).join(', ')}`);
 });
 
 // ---------------------------------------------------------------------------

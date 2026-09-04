@@ -149,7 +149,7 @@ no logic impact).
 |---|---|
 | `f1` | Circle Orboros |
 | `f2` | Convergence of Cyriss |
-| `f3` | Crucible Guard |
+| `f3` | Three Crown Alliance |
 | `f4` | Cryx |
 | `f5` | Cygnar |
 | `f6` | Dusk |
