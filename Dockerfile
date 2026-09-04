@@ -35,7 +35,11 @@ FROM alpine:3.24
 ARG APP_VERSION=0.9.0
 ENV APP_VERSION=$APP_VERSION
 
-RUN apk --no-cache add ca-certificates tzdata
+# Upgrade first: the base tag ships whatever package versions were current when
+# it was cut, and `apk add` won't bump already-installed ones. Without this the
+# image inherits the base's stale openssl (CVE-2026-14456) and Trivy blocks the
+# deploy on it.
+RUN apk --no-cache upgrade && apk --no-cache add ca-certificates tzdata
 
 WORKDIR /app
 
