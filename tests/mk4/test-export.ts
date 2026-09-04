@@ -181,6 +181,38 @@ test('army ID above 255 roundtrips correctly in version 2', () => {
     strictEqual(decoded!.armyId, 'a300');
 });
 
+test('pinned attachment survives URL roundtrip', () => {
+    // Dark Operations: Conduits(0), Slayers(1), Mind Slaver(2) pinned to Slayers
+    const list = makeList({
+        armyId: 'a10', leaderId: 'c1151', pointLimit: 100,
+        entries: [
+            { cardId: 'c1076' },
+            { cardId: 'c1077' },
+            { cardId: 'c924', attachTo: 1 },
+        ],
+    });
+    const decoded = decodeList(encodeList(list))!;
+    ok(decoded, 'decodeList returned null');
+    strictEqual(decoded.entries[2].attachTo, 1);
+    strictEqual(decoded.entries[0].attachTo, undefined);
+});
+
+test('version 2 URL with entries decodes correctly (backward compat)', () => {
+    // v2: version(1b), army(2b), pointLimit(2b), leader(2b), cmdCount(1b),
+    //     then card(2b) + flags(1b) per entry. Flags bit2 is unset pre-v3.
+    const bytes = [2, 0, 14, 0, 75, 0, 0, 0,
+                   0x06, 0x79, 0,      // c1657 Fane Knights, no flags
+                   0x06, 0x7A, 0];     // c1658 Sythyss Prophet, no flags
+    let bin = '';
+    for (const b of bytes) bin += String.fromCharCode(b);
+    const enc = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const decoded = decodeList(enc);
+    ok(decoded, 'v2 URL should decode');
+    strictEqual(decoded!.entries.length, 2);
+    deepStrictEqual(decoded!.entries.map(e => e.cardId), ['c1657', 'c1658']);
+    strictEqual(decoded!.entries[1].attachTo, undefined);
+});
+
 test('command card ID above 255 roundtrips correctly in version 2', () => {
     const list = makeList({ commandCards: ['cmd300'] });
     const decoded = decodeList(encodeList(list));

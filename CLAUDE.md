@@ -180,6 +180,7 @@ interface ListEntry {
     battleGroupLeader?: string;  // cardId of the junior warcaster leading this entry's BG
     slotSelections?:    string[]; // selected hardPoint option names, parallel to card.hardPoints
     companionCardIds?:  string[]; // auto-populated companion card IDs
+    attachTo?:          number;   // index in entries of the unit this attachment is pinned to
 }
 ```
 
@@ -187,7 +188,13 @@ interface ListEntry {
 
 Lists are serialised to a compact binary format packed into base64url for
 sharing. See `mk4export.ts` `encodeList` / `decodeList`. The format is versioned
-(byte 0 = version). Current version: 1.
+(byte 0 = version). Current version: 3; `decodeList` still reads 1 and 2.
+
+Attachments (Command/Weapon Attachment) are normally matched to units by the
+greedy algorithm in `buildAttachmentAssignments`. When the user reassigns one
+with the ▲/▼ buttons, `attachTo` pins it to a specific unit entry and that pin
+wins over the greedy pass. Because `attachTo` holds an entry index, `removeEntry`
+renumbers surviving pins and drops pins onto the removed entry.
 
 ## Auth flow
 
