@@ -5,6 +5,7 @@ import {
     pointsSpent, pointsRemaining, canAdd,
     groupedEntries, sortedTypeKeys, TYPE_ORDER, serialise, deserialise,
     buildAttachmentAssignments, missingRequiredBattleGroups,
+    attachHostOptions, attachmentHost, moveAttachment,
     toggleCommandCard,
 } from '../ccapi/mk4list';
 import { HardPoint } from '../ccapi/mk4data';
@@ -85,6 +86,10 @@ export class BuilderFlow extends Flow {
     private bgLeaderCardId: string | null = null;
     private bgLeaderBanner: HTMLDivElement | null = null;
     private bgBannerText:   HTMLSpanElement | null = null;
+
+    // Inline error shown when an illegal pick is clicked.
+    private pickerError:      HTMLDivElement | null = null;
+    private pickerErrorTimer: number | null = null;
 
     // When non-null, picker shows slot-selection config for this card.
     private configCard:       Mk4Card | null = null;
@@ -351,9 +356,12 @@ export class BuilderFlow extends Flow {
         if (list.leaderId) {
             const leaderCard = Mk4Data.cardById.get(list.leaderId);
             const row = el('div', 'mk4-entry-row');
+            // Type goes in the tooltip — leader names are long and the section
+            // header already says LEADER
+            row.title = leaderCard?.cardType ?? '';
             row.appendChild(el('span', 'mk4-entry-name', leaderCard ? leaderCard.name : list.leaderId));
-            row.appendChild(el('span', 'mk4-entry-type', leaderCard ? leaderCard.cardType : ''));
             row.appendChild(el('span', 'mk4-entry-cost', 'Free'));
+            const leaderActions = el('span', 'mk4-entry-actions');
             const changeBtn = el('button', 'mk4-entry-remove', '✕');
             changeBtn.title = 'Remove leader';
             changeBtn.onclick = () => {
@@ -361,7 +369,8 @@ export class BuilderFlow extends Flow {
                 this.renderList();
                 this.filterPicker();
             };
-            row.appendChild(changeBtn);
+            leaderActions.appendChild(changeBtn);
+            row.appendChild(leaderActions);
             leaderSection.body.appendChild(row);
             if (leaderCard?.splitProfile) {
                 leaderSection.body.appendChild(
@@ -407,7 +416,7 @@ export class BuilderFlow extends Flow {
                 // Attachments indented under units
                 if (type === 'Unit') {
                     for (const attachEntry of attachMap.get(entry) ?? []) {
-                        this.appendEntryRow(sec.body, attachEntry, list, true);
+                        this.appendEntryRow(sec.body, attachEntry, list, true, true);
                     }
                 }
 
@@ -436,13 +445,15 @@ export class BuilderFlow extends Flow {
             cmdRow.appendChild(el('span', 'mk4-entry-name', cmd?.name ?? cmdId));
             const cmdCost = cmd?.pointCost ?? 0;
             cmdRow.appendChild(el('span', 'mk4-entry-cost', cmdCost > 0 ? `${cmdCost} pts` : 'Free'));
+            const cmdActions = el('span', 'mk4-entry-actions');
             const rmBtn = el('button', 'mk4-entry-remove', '✕');
             rmBtn.onclick = () => {
                 this.list = toggleCommandCard(this.list!, cmdId);
                 this.renderList();
                 this.filterPicker();
             };
-            cmdRow.appendChild(rmBtn);
+            cmdActions.appendChild(rmBtn);
+            cmdRow.appendChild(cmdActions);
             cmdSection.body.appendChild(cmdRow);
         }
         this.listDiv.appendChild(cmdSection.section);
@@ -452,6 +463,13 @@ export class BuilderFlow extends Flow {
         const overLimit  = spent > list.pointLimit;
         const warnings: string[] = [];
         if (overLimit)        warnings.push(`List is ${spent - list.pointLimit} pts over the limit`);
+        // An attachment can be left without a host when its unit is removed
+        for (const entry of list.entries) {
+            const c = Mk4Data.cardById.get(entry.cardId);
+            if (c?.cardType !== 'Command Attachment' && c?.cardType !== 'Weapon Attachment') continue;
+            if (inlineAttach.has(entry)) continue;
+            warnings.push(`${c.name} is not attached to a unit`);
+        }
         for (const cardId of missingBg) {
             const card = Mk4Data.cardById.get(cardId);
             warnings.push(`${card?.name ?? cardId} has no battle group`);
@@ -521,7 +539,7 @@ export class BuilderFlow extends Flow {
     }
 
     private appendEntryRow(parent: HTMLElement, entry: ListEntry, list: Mk4List,
-                           indent = false): void {
+                           indent = false, attachMovable = false): void {
         const card       = Mk4Data.cardById.get(entry.cardId);
         const companions = (entry.companionCardIds ?? [])
             .map(id => Mk4Data.cardById.get(id))
@@ -542,6 +560,38 @@ export class BuilderFlow extends Flow {
         row.appendChild(nameWrap);
         row.appendChild(el('span', 'mk4-entry-cost', cost > 0 ? `${cost} pts` : 'Free'));
 
+        // Fixed-width action column keeps every row the same shape
+        const actions = el('span', 'mk4-entry-actions');
+        row.appendChild(actions);
+
+        // ↑/↓ move this attachment between the units that can host it
+        if (attachMovable) {
+            const attachIdx = list.entries.indexOf(entry);
+            const hosts     = attachHostOptions(list, attachIdx);
+            const current   = attachmentHost(list, attachIdx);
+            const pos       = current === null ? -1 : hosts.indexOf(current);
+
+            const moveBtn = (label: string, target: number | undefined) => {
+                const btn = el('button', 'mk4-attach-move', label);
+                const targetCard = target === undefined
+                    ? null : Mk4Data.cardById.get(list.entries[target].cardId);
+                if (target === undefined) {
+                    btn.disabled = true;
+                    btn.title    = 'No other unit can take this attachment';
+                } else {
+                    btn.title   = `Move to ${targetCard?.name ?? 'unit'}`;
+                    btn.onclick = () => {
+                        this.list = moveAttachment(this.list!, attachIdx, target);
+                        this.renderList();
+                        this.filterPicker();
+                    };
+                }
+                actions.appendChild(btn);
+            };
+            moveBtn('▲', pos > 0 ? hosts[pos - 1] : undefined);
+            moveBtn('▼', pos >= 0 && pos < hosts.length - 1 ? hosts[pos + 1] : undefined);
+        }
+
         // ⚙️ reconfigure button for modular cards
         if (card && Mk4Data.isModular(card)) {
             const gearBtn = el('button', 'mk4-bg-btn', '⚙️');
@@ -550,7 +600,7 @@ export class BuilderFlow extends Flow {
                 this.enterConfigMode(card, entry.battleGroupLeader,
                     entry.slotSelections, list.entries.indexOf(entry));
             };
-            row.appendChild(gearBtn);
+            actions.appendChild(gearBtn);
         }
 
         const realIdx = list.entries.indexOf(entry);
@@ -560,7 +610,7 @@ export class BuilderFlow extends Flow {
             this.renderList();
             this.filterPicker();
         };
-        row.appendChild(removeBtn);
+        actions.appendChild(removeBtn);
         parent.appendChild(row);
 
         // Slot selections shown as indented sub-rows
@@ -574,6 +624,7 @@ export class BuilderFlow extends Flow {
                 subRow.appendChild(el('span', 'mk4-entry-name', `${slots[i].label}: ${chosen}`));
                 const optCost = opt?.pointCost ?? 0;
                 subRow.appendChild(el('span', 'mk4-entry-cost', optCost > 0 ? `${optCost} pts` : ''));
+                subRow.appendChild(el('span', 'mk4-entry-actions'));
                 parent.appendChild(subRow);
             }
         }
@@ -583,6 +634,7 @@ export class BuilderFlow extends Flow {
             const subRow = el('div', 'mk4-entry-row mk4-entry-indented mk4-entry-companion');
             subRow.appendChild(el('span', 'mk4-entry-name', comp.name));
             subRow.appendChild(el('span', 'mk4-entry-cost', 'Free'));
+            subRow.appendChild(el('span', 'mk4-entry-actions'));
             parent.appendChild(subRow);
         }
     }
@@ -634,6 +686,10 @@ export class BuilderFlow extends Flow {
         this.bgLeaderBanner.appendChild(this.bgBannerText);
         this.pickerDiv.appendChild(this.bgLeaderBanner);
 
+        this.pickerError = el('div', 'mk4-picker-error');
+        this.pickerError.style.display = 'none';
+        this.pickerDiv.appendChild(this.pickerError);
+
         const searchRow = el('div', 'mk4-search-row');
         this.searchInput = el('input', 'mk4-search') as HTMLInputElement;
         this.searchInput.placeholder = 'Search models…';
@@ -644,6 +700,27 @@ export class BuilderFlow extends Flow {
 
         this.pickerList = el('div', 'mk4-picker-list');
         this.pickerDiv.appendChild(this.pickerList);
+    }
+
+    // Why a pick was refused. Rows stay clickable when unavailable so the reason
+    // shows up here on demand instead of cluttering every row.
+    private showPickerError(msg: string): void {
+        if (!this.pickerError) return;
+        this.pickerError.textContent   = '⚠ ' + msg;
+        this.pickerError.style.display = '';
+        if (this.pickerErrorTimer !== null) clearTimeout(this.pickerErrorTimer);
+        this.pickerErrorTimer = window.setTimeout(() => {
+            if (this.pickerError) this.pickerError.style.display = 'none';
+            this.pickerErrorTimer = null;
+        }, 4000);
+    }
+
+    private clearPickerError(): void {
+        if (this.pickerErrorTimer !== null) {
+            clearTimeout(this.pickerErrorTimer);
+            this.pickerErrorTimer = null;
+        }
+        if (this.pickerError) this.pickerError.style.display = 'none';
     }
 
     private enterBgMode(cardId: string): void {
@@ -809,11 +886,26 @@ export class BuilderFlow extends Flow {
             const check    = isLeader ? { ok: true } as const
                            : canAdd(this.list!, card.id, bgLeader);
 
+            const selectable = check.ok && !alreadySelected;
             const rowCls = 'mk4-picker-row' +
-                (check.ok && !alreadySelected ? ' mk4-picker-available' : ' mk4-picker-unavailable');
+                (selectable ? ' mk4-picker-available' : ' mk4-picker-unavailable');
             const row = el('div', rowCls);
 
-            row.appendChild(el('span', 'mk4-picker-name', card.name));
+            // Every row is one line with the same columns, so the list scans
+            // cleanly; anything extra lives in the tooltip or the error banner.
+            const nameSpan = el('span', 'mk4-picker-name', card.name);
+            row.appendChild(nameSpan);
+
+            const companions = (card.pairedWith?.length
+                && (card.pairSeparateInArmies ?? []).indexOf(this.currentArmy!.id) === -1)
+                ? card.pairedWith
+                    .map(cid => Mk4Data.cardById.get(cid))
+                    .filter((c): c is Mk4Card => !!c)
+                : [];
+            if (companions.length > 0) {
+                const names = companions.map(c => c.name).join(', ');
+                row.appendChild(el('span', 'mk4-picker-tag', '+ ' + names));
+            }
 
             const costText = isLeader ? 'Free' :
                 Mk4Data.isModular(card)
@@ -827,44 +919,38 @@ export class BuilderFlow extends Flow {
             row.appendChild(el('span', 'mk4-picker-fa',
                 `FA ${card.fieldAllowance || '—'}`));
 
-            if (alreadySelected) {
-                row.appendChild(el('span', 'mk4-picker-reason', 'selected'));
-            } else if (!check.ok) {
-                row.appendChild(el('span', 'mk4-picker-reason', (check as any).reason));
-            }
+            const tips: string[] = [];
+            if (companions.length > 0) tips.push('Includes ' + companions.map(c => c.name).join(', '));
+            if (alreadySelected)  tips.push('Already in the list');
+            else if (!check.ok)   tips.push((check as any).reason);
+            row.title = tips.join(' — ');
 
-            // Companion hints
-            if (card.pairedWith?.length && (card.pairSeparateInArmies ?? []).indexOf(this.currentArmy!.id) === -1) {
-                for (const cid of card.pairedWith) {
-                    const comp = Mk4Data.cardById.get(cid);
-                    if (comp) row.appendChild(el('div', 'mk4-picker-companion', `Includes: ${comp.name}`));
+            row.onclick = () => {
+                if (alreadySelected) {
+                    this.showPickerError(`${card.name} is already in the list`);
+                    return;
                 }
-            }
-
-            // True merc badge
-            if (Mk4Data.isTrueMerc(card.id)) {
-                row.appendChild(el('div', 'mk4-picker-companion', 'True Merc — one per list'));
-            }
-
-            if (check.ok && !alreadySelected) {
-                row.onclick = () => {
-                    if (isLeader) {
-                        this.list = setLeader(this.list!, card.id);
+                if (!check.ok) {
+                    this.showPickerError(`${card.name}: ${(check as any).reason}`);
+                    return;
+                }
+                this.clearPickerError();
+                if (isLeader) {
+                    this.list = setLeader(this.list!, card.id);
+                    this.renderList();
+                    this.filterPicker();
+                } else {
+                    const bgLeader = (this.bgLeaderCardId && this.bgLeaderCardId !== this.list!.leaderId)
+                        ? this.bgLeaderCardId : undefined;
+                    if (Mk4Data.isModular(card)) {
+                        this.enterConfigMode(card, bgLeader);
+                    } else {
+                        this.list = addCard(this.list!, card.id, bgLeader);
                         this.renderList();
                         this.filterPicker();
-                    } else {
-                        const bgLeader = (this.bgLeaderCardId && this.bgLeaderCardId !== this.list!.leaderId)
-                            ? this.bgLeaderCardId : undefined;
-                        if (Mk4Data.isModular(card)) {
-                            this.enterConfigMode(card, bgLeader);
-                        } else {
-                            this.list = addCard(this.list!, card.id, bgLeader);
-                            this.renderList();
-                            this.filterPicker();
-                        }
                     }
-                };
-            }
+                }
+            };
 
             sectionBody.appendChild(row);
         }
@@ -884,18 +970,19 @@ export class BuilderFlow extends Flow {
                 cmdRow.appendChild(el('span', 'mk4-picker-name', cmd.name));
                 const costTxt = cmd.pointCost > 0 ? `${cmd.pointCost} pts` : 'Free';
                 cmdRow.appendChild(el('span', 'mk4-picker-cost', costTxt));
-                if (isSelected) {
-                    cmdRow.appendChild(el('span', 'mk4-picker-fa', '✓'));
-                } else if (!canToggle) {
-                    cmdRow.appendChild(el('span', 'mk4-picker-reason', 'Limit reached'));
-                }
-                if (canToggle) {
-                    cmdRow.onclick = () => {
-                        this.list = toggleCommandCard(this.list!, cmd.id);
-                        this.renderList();
-                        this.filterPicker();
-                    };
-                }
+                cmdRow.appendChild(el('span', 'mk4-picker-fa', isSelected ? '✓' : ''));
+                if (!canToggle) cmdRow.title = `Command card limit reached (${cmdLimit})`;
+                cmdRow.onclick = () => {
+                    if (!canToggle) {
+                        this.showPickerError(
+                            `Command card limit reached — ${cmdLimit} per list. Remove one first.`);
+                        return;
+                    }
+                    this.clearPickerError();
+                    this.list = toggleCommandCard(this.list!, cmd.id);
+                    this.renderList();
+                    this.filterPicker();
+                };
                 cmdSec.body.appendChild(cmdRow);
             }
         }

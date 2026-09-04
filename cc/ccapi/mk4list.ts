@@ -5,6 +5,8 @@ export interface ListEntry {
     companionCardIds?: string[];  // auto-joined companions (e.g. Benkei+Sasha with Lanyssa)
     battleGroupLeader?: string;   // card ID of the jr/unit controlling this cohort; absent = main leader
     slotSelections?: string[];    // chosen option name per hard point slot (parallel to card.hardPoints)
+    attachTo?: number;            // index into list.entries of the host unit, when the user
+                                  // has explicitly assigned this attachment; absent = greedy
 }
 
 export interface Mk4List {
@@ -126,28 +128,59 @@ function defenseCountInList(list: Mk4List): number {
     return n;
 }
 
-// Greedy assignment: for each attachment entry (in list order) find the first
-// target unit instance that still has a slot. Returns unit entry → attachments.
-// Used by both canAdd() and the renderer so they always agree.
+// True when unitEntry is a legal host for attachCard, ignoring capacity.
+function isEligibleHost(unitEntry: ListEntry, attachCard: Mk4Card): boolean {
+    const targets = attachCard.canAttachTo ?? [];
+    if (targets.length > 0) return targets.indexOf(unitEntry.cardId) !== -1;
+    // CA/WA with no canAttachTo attaches to any unit
+    return Mk4Data.cardById.get(unitEntry.cardId)?.cardType === 'Unit';
+}
+
+// Assignment: explicit user assignments (entry.attachTo) are honoured first, then
+// the remaining attachments are placed greedily — for each attachment entry (in
+// list order) the first target unit instance that still has a slot.
+// Returns unit entry → attachments. Used by both canAdd() and the renderer so
+// they always agree.
 export function buildAttachmentAssignments(list: Mk4List): Map<ListEntry, ListEntry[]> {
     const map = new Map<ListEntry, ListEntry[]>();
+
+    // Try to seat attachEntry on unitEntry; false when that unit is full.
+    const seat = (unitEntry: ListEntry, attachEntry: ListEntry,
+                  attachCard: Mk4Card, limit: number): boolean => {
+        const existing = map.get(unitEntry) ?? [];
+        const sameType = existing.filter(
+            e => Mk4Data.cardById.get(e.cardId)?.cardType === attachCard.cardType
+        ).length;
+        if (sameType >= limit) return false;
+        map.set(unitEntry, [...existing, attachEntry]);
+        return true;
+    };
+
+    // Pass 1 — pinned attachments claim their host before anything else.
+    const unpinned: { entry: ListEntry; card: Mk4Card; limit: number }[] = [];
     for (const attachEntry of list.entries) {
         const attachCard = Mk4Data.cardById.get(attachEntry.cardId);
         if (!attachCard) continue;
         const limit = ATTACH_LIMITS[attachCard.cardType];
         if (limit === undefined) continue;
 
+        const host = attachEntry.attachTo !== undefined
+            ? list.entries[attachEntry.attachTo]
+            : undefined;
+        if (host && host !== attachEntry && isEligibleHost(host, attachCard)
+            && seat(host, attachEntry, attachCard, limit)) continue;
+
+        unpinned.push({ entry: attachEntry, card: attachCard, limit });
+    }
+
+    // Pass 2 — everything else, greedily.
+    for (const { entry: attachEntry, card: attachCard, limit } of unpinned) {
         const targets = attachCard.canAttachTo ?? [];
         let placed = false;
         outer: for (const targetId of targets) {
             for (const unitEntry of list.entries) {
                 if (unitEntry.cardId !== targetId) continue;
-                const existing = map.get(unitEntry) ?? [];
-                const sameType = existing.filter(
-                    e => Mk4Data.cardById.get(e.cardId)?.cardType === attachCard.cardType
-                ).length;
-                if (sameType < limit) {
-                    map.set(unitEntry, [...existing, attachEntry]);
+                if (seat(unitEntry, attachEntry, attachCard, limit)) {
                     placed = true;
                     break outer;
                 }
@@ -156,20 +189,68 @@ export function buildAttachmentAssignments(list: Mk4List): Map<ListEntry, ListEn
         // CA/WA with no canAttachTo: assign to first unit with room (fallback)
         if (!placed && targets.length === 0) {
             for (const unitEntry of list.entries) {
-                const uCard = Mk4Data.cardById.get(unitEntry.cardId);
-                if (uCard?.cardType !== 'Unit') continue;
-                const existing = map.get(unitEntry) ?? [];
-                const sameType = existing.filter(
-                    e => Mk4Data.cardById.get(e.cardId)?.cardType === attachCard.cardType
-                ).length;
-                if (sameType < limit) {
-                    map.set(unitEntry, [...existing, attachEntry]);
-                    break;
-                }
+                if (Mk4Data.cardById.get(unitEntry.cardId)?.cardType !== 'Unit') continue;
+                if (seat(unitEntry, attachEntry, attachCard, limit)) break;
             }
         }
     }
     return map;
+}
+
+// True when the entry at this index is a command/weapon attachment.
+export function isAttachmentEntry(list: Mk4List, index: number): boolean {
+    const card = Mk4Data.cardById.get(list.entries[index]?.cardId ?? '');
+    return !!card && ATTACH_LIMITS[card.cardType] !== undefined;
+}
+
+// Index of the unit entry this attachment is currently seated on, or null.
+export function attachmentHost(list: Mk4List, attachIdx: number): number | null {
+    const attachEntry = list.entries[attachIdx];
+    if (!attachEntry) return null;
+    for (const [unitEntry, attachments] of buildAttachmentAssignments(list)) {
+        if (attachments.indexOf(attachEntry) !== -1) return list.entries.indexOf(unitEntry);
+    }
+    return null;
+}
+
+// Pin an attachment to a specific host unit. No validation — callers pick the
+// target from attachHostOptions().
+export function moveAttachment(list: Mk4List, attachIdx: number, hostIdx: number): Mk4List {
+    if (!isAttachmentEntry(list, attachIdx)) return list;
+    if (!list.entries[hostIdx] || hostIdx === attachIdx) return list;
+    return {
+        ...list,
+        entries: list.entries.map((e, i) => i === attachIdx ? { ...e, attachTo: hostIdx } : e),
+    };
+}
+
+function seatedAttachmentCount(list: Mk4List): number {
+    let n = 0;
+    for (const attachments of buildAttachmentAssignments(list).values()) n += attachments.length;
+    return n;
+}
+
+// Entry indices of the units this attachment may sit on, in list order, always
+// including its current host. A candidate is offered only if moving there seats
+// the attachment on it without knocking another attachment out of the list.
+export function attachHostOptions(list: Mk4List, attachIdx: number): number[] {
+    if (!isAttachmentEntry(list, attachIdx)) return [];
+    const attachCard = Mk4Data.cardById.get(list.entries[attachIdx].cardId)!;
+    const current    = attachmentHost(list, attachIdx);
+    const seatedNow  = seatedAttachmentCount(list);
+
+    const options: number[] = [];
+    list.entries.forEach((unitEntry, unitIdx) => {
+        if (unitIdx === attachIdx) return;
+        if (!isEligibleHost(unitEntry, attachCard)) return;
+        if (unitIdx === current) { options.push(unitIdx); return; }
+
+        const moved = moveAttachment(list, attachIdx, unitIdx);
+        if (attachmentHost(moved, attachIdx) !== unitIdx) return;   // no room there
+        if (seatedAttachmentCount(moved) < seatedNow) return;       // would orphan another
+        options.push(unitIdx);
+    });
+    return options;
 }
 
 export type AddResult = { ok: true } | { ok: false; reason: string };
@@ -304,7 +385,19 @@ export function missingRequiredBattleGroups(list: Mk4List): string[] {
 }
 
 export function removeEntry(list: Mk4List, index: number): Mk4List {
-    return { ...list, entries: list.entries.filter((_, i) => i !== index) };
+    // attachTo holds entry indices, so surviving pins have to be renumbered and
+    // pins onto the removed entry dropped (that attachment falls back to greedy).
+    const entries = list.entries
+        .filter((_, i) => i !== index)
+        .map(e => {
+            if (e.attachTo === undefined || e.attachTo < index) return e;
+            if (e.attachTo === index) {
+                const { attachTo, ...rest } = e;
+                return rest;
+            }
+            return { ...e, attachTo: e.attachTo - 1 };
+        });
+    return { ...list, entries };
 }
 
 export function setLeader(list: Mk4List, leaderId: string | null): Mk4List {

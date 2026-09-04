@@ -143,17 +143,18 @@ export function listToText(list: Mk4List, listName?: string): string {
 //   [7..7+N-1] command card numbers (1 byte each; "cmd3" → 3)
 //   then per model entry until end of buffer:
 //     [0-1] card number  (uint16 big-endian)
-//     [2]   flags: bit0 = hasBGLeader, bit1 = hasSlots
+//     [2]   flags: bit0 = hasBGLeader, bit1 = hasSlots, bit2 = hasAttachTo (v3+)
 //     [3-4] BG leader card (if hasBGLeader)
 //     [n]   slot count, then N bytes of option indices (if hasSlots)
 //           0xFF = no selection for that slot
+//     [n]   host entry index (1 byte, if hasAttachTo)
 // ---------------------------------------------------------------------------
 
 export function encodeList(list: Mk4List): string {
     const b: number[] = [];
     const push2 = (n: number) => { b.push((n >> 8) & 0xFF, n & 0xFF); };
 
-    b.push(2);                                            // version (2 = uint16 army/cmd IDs)
+    b.push(3);                                            // version (3 = pinned attachments)
     push2(parseInt(list.armyId.slice(1)));                // army (uint16)
     push2(list.pointLimit);
     push2(list.leaderId ? parseInt(list.leaderId.slice(1)) : 0);
@@ -166,9 +167,12 @@ export function encodeList(list: Mk4List): string {
     for (const entry of list.entries) {
         push2(parseInt(entry.cardId.slice(1)));
 
-        const hasBGLeader = !!entry.battleGroupLeader;
-        const hasSlots    = !!(entry.slotSelections?.some(s => s !== ''));
-        b.push((hasBGLeader ? 1 : 0) | (hasSlots ? 2 : 0));
+        const hasBGLeader  = !!entry.battleGroupLeader;
+        const hasSlots     = !!(entry.slotSelections?.some(s => s !== ''));
+        // Host index rides in a single byte; lists never get near 255 entries.
+        const hasAttachTo  = entry.attachTo !== undefined
+                             && entry.attachTo >= 0 && entry.attachTo <= 0xFF;
+        b.push((hasBGLeader ? 1 : 0) | (hasSlots ? 2 : 0) | (hasAttachTo ? 4 : 0));
 
         if (hasBGLeader) push2(parseInt(entry.battleGroupLeader!.slice(1)));
 
@@ -182,6 +186,8 @@ export function encodeList(list: Mk4List): string {
                 b.push(idx >= 0 ? idx : 0xFF);
             }
         }
+
+        if (hasAttachTo) b.push(entry.attachTo!);
     }
 
     let bin = '';
@@ -200,7 +206,7 @@ export function decodeList(encoded: string): Mk4List | null {
         const rd2 = () => { const n = (bytes[pos] << 8) | bytes[pos + 1]; pos += 2; return n; };
 
         const version = rd1();
-        if (version !== 1 && version !== 2) return null;
+        if (version < 1 || version > 3) return null;
         const armyId     = 'a' + (version === 1 ? rd1() : rd2());
         const pointLimit = rd2();
         const leaderNum  = rd2();
@@ -218,6 +224,7 @@ export function decodeList(encoded: string): Mk4List | null {
             const flags       = rd1();
             const hasBGLeader = !!(flags & 1);
             const hasSlots    = !!(flags & 2);
+            const hasAttachTo = version >= 3 && !!(flags & 4);
 
             const battleGroupLeader = hasBGLeader ? ('c' + rd2()) : undefined;
 
@@ -233,10 +240,13 @@ export function decodeList(encoded: string): Mk4List | null {
                 }
             }
 
+            const attachTo = hasAttachTo ? rd1() : undefined;
+
             entries.push({
                 cardId: 'c' + cardNum,
                 ...(battleGroupLeader !== undefined && { battleGroupLeader }),
                 ...(slotSelections    !== undefined && { slotSelections }),
+                ...(attachTo          !== undefined && { attachTo }),
             });
         }
 
