@@ -11,6 +11,7 @@ import { Mk4Data } from '../../cc/ccapi/mk4data';
 import {
     canAdd, addCard, pointsSpent, pointsRemaining,
     serialise, deserialise, toggleCommandCard, removeEntry, setLeader,
+    buildAttachmentAssignments, attachHostOptions, attachmentHost, moveAttachment,
 } from '../../cc/ccapi/mk4list';
 import type { Mk4List } from '../../cc/ccapi/mk4list';
 
@@ -56,6 +57,12 @@ await Mk4Data.load();
 //   c959   Carver Ultimus           Solo(merc) FA:C  cost:20  (explicit include, true merc)
 //   Army: House Kallyss (a19)
 //   c493   Lanyssa Ryssyl           Solo       FA:C  cost:18  pairedWith:[c510,c512]
+//   Army: Dark Operations (a10)
+//   c1151  Exulon Thexus            Warcaster
+//   c1076  Drudge Conduits          Unit
+//   c1077  Drudge Slayers           Unit
+//   c923   Mind Bender              CA→[c1076,c1077]
+//   c924   Mind Slaver              CA→[c1076,c1077]
 // ---------------------------------------------------------------------------
 
 function makeList(overrides: Partial<Mk4List> = {}): Mk4List {
@@ -342,6 +349,91 @@ test('setLeader updates leaderId', () => {
 test('setLeader to null clears leader', () => {
     const list = setLeader(makeList(), null);
     strictEqual(list.leaderId, null);
+});
+
+// ---------------------------------------------------------------------------
+// Attachment assignment and reassignment
+// ---------------------------------------------------------------------------
+console.log('\nattachment assignment');
+
+// Host entry index an attachment ended up on, by attachment entry index.
+function hostOf(list: Mk4List, attachIdx: number): number | null {
+    return attachmentHost(list, attachIdx);
+}
+
+function cephalyxList(): Mk4List {
+    // Conduits(0), Slayers(1), Bender(2), Slaver(3)
+    let list = makeList({ armyId: 'a10', leaderId: 'c1151', pointLimit: 100 });
+    for (const id of ['c1076', 'c1077', 'c923', 'c924']) list = addCard(list, id);
+    return list;
+}
+
+test('unpinned attachments fill eligible units in canAttachTo order', () => {
+    // Both CAs target Conduits first, so the second one spills to Slayers
+    const list = cephalyxList();
+    strictEqual(hostOf(list, 2), 0, 'Mind Bender should sit on Drudge Conduits');
+    strictEqual(hostOf(list, 3), 1, 'Mind Slaver should spill to Drudge Slayers');
+});
+
+test('attachHostOptions lists every eligible unit including the current host', () => {
+    deepStrictEqual(attachHostOptions(cephalyxList(), 3), [0, 1]);
+});
+
+test('attachHostOptions is empty for a non-attachment entry', () => {
+    deepStrictEqual(attachHostOptions(cephalyxList(), 0), []);
+});
+
+test('moveAttachment pins an attachment to the chosen unit', () => {
+    // The reported bug: Mind Slaver stuck on Conduits with no way to reach Slayers
+    let list = cephalyxList();
+    list = removeEntry(list, 3);            // drop Slaver
+    list = addCard(list, 'c1076');          // second Conduits at index 3
+    list = addCard(list, 'c924');           // Slaver at index 4 → greedy picks Conduits #2
+    strictEqual(hostOf(list, 4), 3);
+
+    list = moveAttachment(list, 4, 1);      // move it onto Drudge Slayers
+    strictEqual(hostOf(list, 4), 1);
+    strictEqual(list.entries[4].attachTo, 1);
+});
+
+test('pinned attachment keeps its host when an earlier entry is removed', () => {
+    let list = cephalyxList();
+    list = moveAttachment(list, 2, 1);      // pin Bender to Slayers
+    list = removeEntry(list, 0);            // remove Conduits — indices shift down
+    strictEqual(list.entries[1].attachTo, 0, 'pin should be renumbered');
+    strictEqual(hostOf(list, 1), 0, 'Bender should still be on Slayers');
+});
+
+test('removing the pinned host drops the pin and falls back to greedy', () => {
+    let list = cephalyxList();
+    list = moveAttachment(list, 2, 1);      // pin Bender to Slayers
+    list = removeEntry(list, 1);            // remove Slayers
+    strictEqual(list.entries[1].attachTo, undefined, 'stale pin should be cleared');
+    strictEqual(hostOf(list, 1), 0, 'Bender falls back to Conduits');
+});
+
+test('pinning does not orphan the other attachment', () => {
+    let list = cephalyxList();
+    list = moveAttachment(list, 3, 0);      // pin Slaver to Conduits, bumping Bender
+    strictEqual(hostOf(list, 3), 0);
+    strictEqual(hostOf(list, 2), 1, 'Mind Bender should move to Slayers, not be orphaned');
+    const seated = [...buildAttachmentAssignments(list).values()].flat().length;
+    strictEqual(seated, 2);
+});
+
+test('a full unit is not offered as a move target', () => {
+    let list = cephalyxList();
+    list = removeEntry(list, 1);            // only Conduits left; Slaver has nowhere to go
+    // entries: Conduits(0), Bender(1), Slaver(2)
+    strictEqual(hostOf(list, 1), 0);
+    strictEqual(hostOf(list, 2), null, 'Slaver has no seat');
+    deepStrictEqual(attachHostOptions(list, 1), [0], 'Bender has only its own host');
+});
+
+test('serialise/deserialise preserves a pinned attachment', () => {
+    const list = moveAttachment(cephalyxList(), 3, 0);
+    const back = deserialise(serialise(list))!;
+    strictEqual(back.entries[3].attachTo, 0);
 });
 
 // ---------------------------------------------------------------------------

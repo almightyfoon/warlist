@@ -3256,9 +3256,12 @@ div.formTH .typedrop {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 6px;
+    padding: 0 6px;
+    min-height: 28px;
+    box-sizing: border-box;
     border-radius: 3px;
     font-size: 13px;
+    white-space: nowrap;
 }
 .mk4-entry-row:hover { background: var(--hover-bg, rgba(0,0,0,0.05)); }
 .mk4-entry-indented { padding-left: 20px; }
@@ -3319,9 +3322,28 @@ div.formTH .typedrop {
 }
 .mk4-config-add:hover { opacity: 0.85; }
 
-.mk4-entry-name { flex: 1; }
-.mk4-entry-type { font-size: 11px; color: var(--subheader-color, #888); }
-.mk4-entry-cost { font-size: 12px; color: var(--subheader-color, #888); white-space: nowrap; }
+.mk4-entry-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mk4-entry-cost {
+    flex: 0 0 52px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--subheader-color, #888);
+}
+
+/* Every row ends with the same-width control column so names and costs line up */
+.mk4-entry-actions {
+    flex: 0 0 auto;
+    min-width: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2px;
+}
 
 .mk4-entry-remove {
     background: none;
@@ -3331,6 +3353,22 @@ div.formTH .typedrop {
     font-size: 14px;
     padding: 0 2px;
     line-height: 1;
+}
+
+/* ▲/▼ reassign an attachment to another eligible unit */
+.mk4-attach-move {
+    background: none;
+    border: none;
+    color: var(--link-color, #46a);
+    cursor: pointer;
+    font-size: 10px;
+    padding: 0 1px;
+    line-height: 1;
+}
+.mk4-attach-move:disabled {
+    color: var(--subheader-color, #888);
+    opacity: 0.35;
+    cursor: default;
 }
 
 .mk4-empty-slot {
@@ -3390,6 +3428,8 @@ div.formTH .typedrop {
 
 /* Picker (right panel) */
 
+.mk4-picker { position: relative; }
+
 .mk4-search-row { margin-bottom: 8px; }
 .mk4-search {
     width: 100%;
@@ -3418,34 +3458,71 @@ div.formTH .typedrop {
     background: var(--bg-color, #fff);
 }
 
+/* One line per card, same height and same columns on every row */
 .mk4-picker-row {
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 6px;
-    padding: 5px 8px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px;
+    height: 30px;
+    box-sizing: border-box;
     border-radius: 3px;
     font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
     border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.06));
 }
 
-.mk4-picker-available { cursor: pointer; }
+/* Unavailable rows stay clickable — the click explains why in .mk4-picker-error */
+.mk4-picker-row { cursor: pointer; }
 .mk4-picker-available:hover { background: var(--hover-bg, rgba(0,0,0,0.06)); }
 .mk4-picker-unavailable { opacity: 0.45; }
+.mk4-picker-unavailable:hover { opacity: 0.65; }
 
-.mk4-picker-name { flex: 1; font-weight: 500; }
-.mk4-picker-cost { font-size: 12px; color: var(--subheader-color, #888); }
-.mk4-picker-fa   { font-size: 11px; color: var(--subheader-color, #aaa); }
-.mk4-picker-reason {
-    font-size: 11px;
-    color: #c44;
-    font-style: italic;
-    width: 100%;
+.mk4-picker-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
 }
-.mk4-picker-companion {
+.mk4-picker-tag {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 11px;
     color: var(--accent-color, #4a9);
-    width: 100%;
+}
+.mk4-picker-cost {
+    flex: 0 0 62px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--subheader-color, #888);
+}
+.mk4-picker-fa {
+    flex: 0 0 34px;
+    text-align: right;
+    font-size: 11px;
+    color: var(--subheader-color, #aaa);
+}
+
+/* Overlays the top of the picker so showing it never shifts the rows the user
+   is clicking. Opaque so the list doesn't bleed through. */
+.mk4-picker-error {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    background: linear-gradient(rgba(204, 68, 68, 0.16), rgba(204, 68, 68, 0.16)),
+                var(--card-bg, #fff);
+    border: 1px solid #c44;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #c44;
+    font-size: 12px;
+    padding: 7px 8px;
 }
 
 .mk4-picker-empty {
