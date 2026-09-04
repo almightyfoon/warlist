@@ -279,7 +279,8 @@ test('leader name starts at col 8 (8-space indent)', () => {
 test('main BG cohort: PC at col 0, name at col 12', () => {
     // entry with no battleGroupLeader + COHORT_TYPES card → main BG
     const list = makeList({ entries: [{ cardId: 'c1653' }] });
-    const cost  = Mk4Data.pointCost(strygon);
+    // No slotSelections, so the export renders the cheapest configuration.
+    const cost  = Mk4Data.entryCost(strygon);
     const lines = listToText(list).split('\n');
     const line  = lines.find(l => l.includes(strygon.name))!;
     ok(line, `"${strygon.name}" not in output`);

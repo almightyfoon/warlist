@@ -7,7 +7,7 @@
 
 import { readFileSync } from 'fs';
 import { strictEqual, ok, deepStrictEqual } from 'assert';
-import { Mk4Data } from '../../cc/ccapi/mk4data';
+import { Mk4Data, LEADER_TYPES } from '../../cc/ccapi/mk4data';
 import {
     canAdd, addCard, pointsSpent, pointsRemaining,
     serialise, deserialise, toggleCommandCard, removeEntry, setLeader,
@@ -261,6 +261,25 @@ test('command card cost included', () => {
 test('pointsRemaining = limit - spent', () => {
     const list = addCard(makeList({ pointLimit: 75 }), 'c1656'); // spent 8
     strictEqual(pointsRemaining(list), 67);
+});
+
+test('what canAdd charges is what the list tallies', () => {
+    // A card whose slots each hold one option is not modular, so the picker adds
+    // it with no slotSelections. The gate and the tally must still agree, or the
+    // model is silently discounted (c800 Skylla did exactly this).
+    for (const card of Mk4Data.cards) {
+        if (!card.hardPoints || LEADER_TYPES.has(card.cardType)) continue;
+        const army = Mk4Data.armies.find(a => Mk4Data.availableCards(a).some(c => c.id === card.id));
+        if (!army) continue;
+
+        const empty: Mk4List = { armyId: army.id, leaderId: null, entries: [],
+                                 commandCards: [], pointLimit: 500 };
+        const after = addCard(empty, card.id);
+        if (after.entries.length === 0) continue;   // couldn't be added bare
+
+        strictEqual(pointsSpent(after), Mk4Data.minCost(card),
+            `${card.id} ${card.name}: gated at ${Mk4Data.minCost(card)} but tallied ${pointsSpent(after)}`);
+    }
 });
 
 // ---------------------------------------------------------------------------

@@ -59,9 +59,7 @@ export function pointsSpent(list: Mk4List): number {
     for (const entry of list.entries) {
         const card = Mk4Data.cardById.get(entry.cardId);
         if (card) {
-            total += entry.slotSelections
-                ? Mk4Data.configuredCost(card, entry.slotSelections)
-                : Mk4Data.pointCost(card);
+            total += Mk4Data.entryCost(card, entry.slotSelections);
         }
         for (const cid of entry.companionCardIds ?? []) {
             const comp = Mk4Data.cardById.get(cid);
@@ -321,9 +319,7 @@ export function canAdd(list: Mk4List, cardId: string,
 
     const army      = Mk4Data.armyById.get(list.armyId);
     const companions = army ? Mk4Data.companionsFor(card, list.armyId) : [];
-    const cardCost  = slotSelections
-        ? Mk4Data.configuredCost(card, slotSelections)
-        : Mk4Data.minCost(card);
+    const cardCost  = Mk4Data.entryCost(card, slotSelections);
     const totalCost = cardCost + companions.reduce((s, c) => s + Mk4Data.pointCost(c), 0);
 
     if (pointsSpent(list) + totalCost > list.pointLimit)

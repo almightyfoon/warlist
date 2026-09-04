@@ -159,17 +159,22 @@ test('all cards have required fields', () => {
     strictEqual(bad.length, 0, `Cards missing required fields: ${bad.slice(0,3).join(', ')}`);
 });
 
-test('modular cards carry their whole cost in hard point options', () => {
-    // When the options are priced, the base pointCost must be 0 — otherwise the
-    // hard point minimums get charged on top of it and the model is overpriced.
-    // Units whose loadout picks are all free (Winter Korps / Kithguard Infantry)
-    // legitimately keep their cost in pointCost.
+test('a card with hard points prices them OR its base, never both', () => {
+    // Two legitimate shapes: modular cohorts carry their whole cost in priced
+    // options with a zero base (Crusader, Fortress King), and fixed loadouts
+    // carry it in pointCost with free options (Beaker, Molok, Skylla, and the
+    // Winter Korps / Kithguard Infantry loadout picks). A card with both is the
+    // extraction bug that made Strygon, Vordak and Skylla double-count: the
+    // base repeats the option total, so the model is charged roughly twice.
     const bad = cards
-        .filter(c => (c.hardPoints ?? []).some(hp => hp.options.length > 1))
-        .filter(c => c.hardPoints.some(hp => hp.options.some(o => o.pointCost > 0)))
         .filter(c => c.pointCost !== 0)
-        .map(c => `${c.id} ${c.name} (base ${c.pointCost})`);
-    strictEqual(bad.length, 0, `Modular cards with a non-zero base cost: ${bad.join(', ')}`);
+        .filter(c => (c.hardPoints ?? []).some(hp => hp.options.some(o => o.pointCost > 0)))
+        .map(c => {
+            const opts = c.hardPoints.reduce(
+                (s, hp) => s + Math.min(...hp.options.map(o => o.pointCost)), 0);
+            return `${c.id} ${c.name} (base ${c.pointCost} + options ${opts})`;
+        });
+    strictEqual(bad.length, 0, `Cards pricing both base and options: ${bad.join(', ')}`);
 });
 
 // ---------------------------------------------------------------------------

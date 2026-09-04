@@ -546,11 +546,7 @@ export class BuilderFlow extends Flow {
             .filter((c): c is NonNullable<typeof c> => c !== undefined);
 
         const companionCost = companions.reduce((s, c) => s + Mk4Data.pointCost(c), 0);
-        const cardCost = card
-            ? (entry.slotSelections
-                ? Mk4Data.configuredCost(card, entry.slotSelections)
-                : Mk4Data.pointCost(card))
-            : 0;
+        const cardCost = card ? Mk4Data.entryCost(card, entry.slotSelections) : 0;
         const cost = cardCost + companionCost;
 
         const rowCls = 'mk4-entry-row' + (indent ? ' mk4-entry-indented' : '');

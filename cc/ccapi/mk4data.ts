@@ -238,4 +238,14 @@ export class Mk4Data {
         }
         return cost;
     }
+
+    // What a card costs as an entry in a list: the chosen configuration, or the
+    // cheapest one when nothing has been chosen. Cards whose slots each hold a
+    // single option are not modular, so the picker adds them without selections
+    // — falling back to pointCost there would drop their hard point costs and
+    // undercharge them against what canAdd allowed. Every cost readout and the
+    // points gate go through here so they cannot disagree.
+    static entryCost(card: Mk4Card, selections?: string[]): number {
+        return selections ? this.configuredCost(card, selections) : this.minCost(card);
+    }
 }
