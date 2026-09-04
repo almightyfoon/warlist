@@ -15254,7 +15254,7 @@
         "options": [
           {
             "name": "Skylla",
-            "pointCost": 9
+            "pointCost": 0
           }
         ]
       },
@@ -15263,7 +15263,7 @@
         "options": [
           {
             "name": "Horned Piercer",
-            "pointCost": 4
+            "pointCost": 0
           }
         ]
       },
@@ -15272,7 +15272,7 @@
         "options": [
           {
             "name": "Gnashing Fangs",
-            "pointCost": 3
+            "pointCost": 0
           }
         ]
       }
