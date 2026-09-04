@@ -25207,10 +25207,12 @@
     "isUnlimited": false,
     "armyIds": [
       "a15",
-      "a38"
+      "a38",
+      "a42"
     ],
     "keywordsIds": [
-      "k95"
+      "k95",
+      "k188"
     ]
   },
   {
@@ -31383,7 +31385,7 @@
     "faction": "Dusk",
     "factionId": "f6",
     "cardType": "Warbeast",
-    "pointCost": 5,
+    "pointCost": 0,
     "fieldAllowance": "4",
     "isUnlimited": false,
     "armyIds": [
@@ -31464,7 +31466,7 @@
     "faction": "Dusk",
     "factionId": "f6",
     "cardType": "Warbeast",
-    "pointCost": 8,
+    "pointCost": 0,
     "fieldAllowance": "4",
     "isUnlimited": false,
     "armyIds": [
@@ -31577,7 +31579,9 @@
     "canAttachTo": [
       "c1664",
       "c1657",
-      "c1665"
+      "c1665",
+      "c1689",
+      "c1690"
     ]
   },
   {
@@ -31831,7 +31835,9 @@
     "canAttachTo": [
       "c1664",
       "c1657",
-      "c1665"
+      "c1665",
+      "c1689",
+      "c1690"
     ]
   },
   {
@@ -31896,6 +31902,611 @@
     ],
     "keywordsIds": [
       "k77"
+    ]
+  },
+  {
+    "id": "c1678",
+    "name": "Horkos",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Warbeast",
+    "pointCost": 15,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1679",
+    "name": "Auricant Vorsalys",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Warlock",
+    "pointCost": 0,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1680",
+    "name": "Harasheth, The Gorged Darkness",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Warlock",
+    "pointCost": 0,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1681",
+    "name": "Nymara, The Shadowblade",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Warlock",
+    "pointCost": 0,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1682",
+    "name": "Lesser Eldritch",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Solo",
+    "pointCost": 3,
+    "fieldAllowance": "3",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1683",
+    "name": "Razor Bat Alpha",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Solo",
+    "pointCost": 6,
+    "fieldAllowance": "2",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1684",
+    "name": "Riven",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Solo",
+    "pointCost": 3,
+    "fieldAllowance": "2",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1685",
+    "name": "Thaelmara, Mistress of the Damned",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Solo",
+    "pointCost": 5,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1686",
+    "name": "The Forsaken",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Solo",
+    "pointCost": 5,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1687",
+    "name": "Hollowed",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Unit",
+    "pointCost": 4,
+    "fieldAllowance": "4",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1688",
+    "name": "Styrge Hounds",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Unit",
+    "pointCost": 11,
+    "fieldAllowance": "2",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1689",
+    "name": "The Devoted",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Unit",
+    "pointCost": 7,
+    "fieldAllowance": "2",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1690",
+    "name": "The Merciless",
+    "faction": "Dusk",
+    "factionId": "f6",
+    "cardType": "Unit",
+    "pointCost": 7,
+    "fieldAllowance": "4",
+    "isUnlimited": false,
+    "armyIds": [
+      "a14"
+    ],
+    "keywordsIds": [
+      "k52"
+    ]
+  },
+  {
+    "id": "c1691",
+    "name": "Fortress King",
+    "faction": "Southern Kriels",
+    "factionId": "f18",
+    "cardType": "Warbeast",
+    "pointCost": 0,
+    "fieldAllowance": "2",
+    "isUnlimited": false,
+    "armyIds": [
+      "a22"
+    ],
+    "keywordsIds": [
+      "k67"
+    ],
+    "hardPoints": [
+      {
+        "label": "Head",
+        "options": [
+          {
+            "name": "Optical Array",
+            "pointCost": 6
+          },
+          {
+            "name": "Rock Maw",
+            "pointCost": 5
+          }
+        ]
+      },
+      {
+        "label": "Gun Emplacements",
+        "options": [
+          {
+            "name": "Cannons",
+            "pointCost": 8
+          },
+          {
+            "name": "Chainguns",
+            "pointCost": 9
+          }
+        ]
+      },
+      {
+        "label": "Right Arm",
+        "options": [
+          {
+            "name": "Piston-Axe",
+            "pointCost": 10
+          },
+          {
+            "name": "Ripping Axe",
+            "pointCost": 9
+          }
+        ]
+      },
+      {
+        "label": "Left Arm",
+        "options": [
+          {
+            "name": "Heavy Grenade Launcher",
+            "pointCost": 6
+          },
+          {
+            "name": "Twin Flamethrower",
+            "pointCost": 5
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c1692",
+    "name": "Drago",
+    "faction": "Khador",
+    "factionId": "f10",
+    "cardType": "Warbeast",
+    "pointCost": 20,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a1",
+      "a2",
+      "a25",
+      "a41"
+    ],
+    "keywordsIds": [
+      "k78"
+    ]
+  },
+  {
+    "id": "c1693",
+    "name": "Captain Barl \"Demolisher\" Dunax",
+    "faction": "Mercenaries",
+    "factionId": "f13",
+    "cardType": "Solo",
+    "pointCost": 3,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a17",
+      "a22",
+      "a28",
+      "a41",
+      "a42"
+    ],
+    "keywordsIds": []
+  },
+  {
+    "id": "c1694",
+    "name": "Feora, Marshal of the Flameguard",
+    "faction": "Protectorate of Menoth",
+    "factionId": "f15",
+    "cardType": "Warcaster",
+    "pointCost": 0,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a42"
+    ],
+    "keywordsIds": [
+      "k188"
+    ]
+  },
+  {
+    "id": "c1695",
+    "name": "Crusader",
+    "faction": "Protectorate of Menoth",
+    "factionId": "f15",
+    "cardType": "Warjack",
+    "pointCost": 0,
+    "fieldAllowance": "4",
+    "isUnlimited": false,
+    "armyIds": [
+      "a42"
+    ],
+    "keywordsIds": [
+      "k188"
+    ],
+    "hardPoints": [
+      {
+        "label": "Head",
+        "options": [
+          {
+            "name": "Ashen Veil",
+            "pointCost": 1
+          },
+          {
+            "name": "Combustion",
+            "pointCost": 1
+          },
+          {
+            "name": "Shield Guard",
+            "pointCost": 1
+          },
+          {
+            "name": "Venerable",
+            "pointCost": 2
+          }
+        ]
+      },
+      {
+        "label": "Left Arm",
+        "options": [
+          {
+            "name": "Battle Shield",
+            "pointCost": 5
+          },
+          {
+            "name": "Blazing Star",
+            "pointCost": 5
+          },
+          {
+            "name": "Condemner",
+            "pointCost": 5
+          },
+          {
+            "name": "Flame Fist",
+            "pointCost": 4
+          }
+        ]
+      },
+      {
+        "label": "Right Arm",
+        "options": [
+          {
+            "name": "Flame Belcher",
+            "pointCost": 6
+          },
+          {
+            "name": "Flame Pike",
+            "pointCost": 6
+          },
+          {
+            "name": "Heavy Purifier",
+            "pointCost": 4
+          },
+          {
+            "name": "Inferno Mace",
+            "pointCost": 5
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "c1696",
+    "name": "Cleanser Preceptor",
+    "faction": "Protectorate of Menoth",
+    "factionId": "f15",
+    "cardType": "Solo",
+    "pointCost": 5,
+    "fieldAllowance": "2",
+    "isUnlimited": false,
+    "armyIds": [
+      "a42"
+    ],
+    "keywordsIds": [
+      "k188"
+    ]
+  },
+  {
+    "id": "c1697",
+    "name": "Pyrrhus, Flameguard Commander",
+    "faction": "Protectorate of Menoth",
+    "factionId": "f15",
+    "cardType": "Solo",
+    "pointCost": 4,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a42"
+    ],
+    "keywordsIds": [
+      "k188"
+    ]
+  },
+  {
+    "id": "c1698",
+    "name": "Valeria, Whisper of Death",
+    "faction": "Protectorate of Menoth",
+    "factionId": "f15",
+    "cardType": "Solo",
+    "pointCost": 5,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a42"
+    ],
+    "keywordsIds": [
+      "k188"
+    ]
+  },
+  {
+    "id": "c1699",
+    "name": "Cleanser Sanctifiers",
+    "faction": "Protectorate of Menoth",
+    "factionId": "f15",
+    "cardType": "Unit",
+    "pointCost": 9,
+    "fieldAllowance": "2",
+    "isUnlimited": false,
+    "armyIds": [
+      "a42"
+    ],
+    "keywordsIds": [
+      "k188"
+    ]
+  },
+  {
+    "id": "c1700",
+    "name": "Daughters of the Veil",
+    "faction": "Protectorate of Menoth",
+    "factionId": "f15",
+    "cardType": "Unit",
+    "pointCost": 9,
+    "fieldAllowance": "C",
+    "isUnlimited": false,
+    "armyIds": [
+      "a42"
+    ],
+    "keywordsIds": [
+      "k188"
+    ]
+  },
+  {
+    "id": "c1701",
+    "name": "Flameguard Defenders",
+    "faction": "Protectorate of Menoth",
+    "factionId": "f15",
+    "cardType": "Unit",
+    "pointCost": 8,
+    "fieldAllowance": "4",
+    "isUnlimited": false,
+    "armyIds": [
+      "a42"
+    ],
+    "keywordsIds": [
+      "k188"
+    ]
+  },
+  {
+    "id": "c1702",
+    "name": "Vassals of Menoth",
+    "faction": "Protectorate of Menoth",
+    "factionId": "f15",
+    "cardType": "Unit",
+    "pointCost": 4,
+    "fieldAllowance": "2",
+    "isUnlimited": false,
+    "armyIds": [
+      "a42"
+    ],
+    "keywordsIds": [
+      "k188"
+    ]
+  },
+  {
+    "id": "c1703",
+    "name": "Revenger",
+    "faction": "Protectorate of Menoth",
+    "factionId": "f15",
+    "cardType": "Warjack",
+    "pointCost": 0,
+    "fieldAllowance": "4",
+    "isUnlimited": false,
+    "armyIds": [
+      "a42"
+    ],
+    "keywordsIds": [
+      "k188"
+    ],
+    "hardPoints": [
+      {
+        "label": "Head",
+        "options": [
+          {
+            "name": "Arc Node",
+            "pointCost": 1
+          },
+          {
+            "name": "Defensive",
+            "pointCost": 1
+          },
+          {
+            "name": "Flame Trail",
+            "pointCost": 1
+          },
+          {
+            "name": "Paladin",
+            "pointCost": 1
+          }
+        ]
+      },
+      {
+        "label": "Left Arm",
+        "options": [
+          {
+            "name": "Battle Mace",
+            "pointCost": 2
+          },
+          {
+            "name": "Grenade Launcher",
+            "pointCost": 3
+          },
+          {
+            "name": "Purifier",
+            "pointCost": 2
+          },
+          {
+            "name": "Repulsor Shield",
+            "pointCost": 3
+          }
+        ]
+      },
+      {
+        "label": "Right Arm",
+        "options": [
+          {
+            "name": "Blazer",
+            "pointCost": 3
+          },
+          {
+            "name": "Halberd",
+            "pointCost": 4
+          },
+          {
+            "name": "Light Immolator",
+            "pointCost": 3
+          },
+          {
+            "name": "Skyhammer",
+            "pointCost": 5
+          }
+        ]
+      }
     ]
   }
 ]

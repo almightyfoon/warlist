@@ -59,12 +59,12 @@ function test(name, fn) {
 // ---------------------------------------------------------------------------
 console.log('\nData integrity — counts');
 
-test('1671 live cards total', () => {
-    strictEqual(cards.length, 1671);
+test('1697 live cards total', () => {
+    strictEqual(cards.length, 1697);
 });
 
-test('40 armies total', () => {
-    strictEqual(armies.length, 40);
+test('41 armies total', () => {
+    strictEqual(armies.length, 41);
 });
 
 test('generalFactionId resolves', () => {
@@ -157,6 +157,19 @@ test('all cards have required fields', () => {
         }
     }
     strictEqual(bad.length, 0, `Cards missing required fields: ${bad.slice(0,3).join(', ')}`);
+});
+
+test('modular cards carry their whole cost in hard point options', () => {
+    // When the options are priced, the base pointCost must be 0 — otherwise the
+    // hard point minimums get charged on top of it and the model is overpriced.
+    // Units whose loadout picks are all free (Winter Korps / Kithguard Infantry)
+    // legitimately keep their cost in pointCost.
+    const bad = cards
+        .filter(c => (c.hardPoints ?? []).some(hp => hp.options.length > 1))
+        .filter(c => c.hardPoints.some(hp => hp.options.some(o => o.pointCost > 0)))
+        .filter(c => c.pointCost !== 0)
+        .map(c => `${c.id} ${c.name} (base ${c.pointCost})`);
+    strictEqual(bad.length, 0, `Modular cards with a non-zero base cost: ${bad.join(', ')}`);
 });
 
 // ---------------------------------------------------------------------------

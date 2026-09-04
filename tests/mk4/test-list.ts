@@ -241,15 +241,15 @@ test('empty list costs 0', () => {
 });
 
 test('single entry cost added', () => {
-    // c1653 Strygon costs 5
-    const list = addCard(makeList(), 'c1653');
-    strictEqual(pointsSpent(list), 5);
+    // c1656 Strygon Rider costs 8
+    const list = addCard(makeList(), 'c1656');
+    strictEqual(pointsSpent(list), 8);
 });
 
 test('multiple entries summed', () => {
-    let list = addCard(makeList(), 'c1653'); // 5
-    list     = addCard(list, 'c1656');       // 8
-    strictEqual(pointsSpent(list), 13);
+    let list = addCard(makeList(), 'c1656'); // 8
+    list     = addCard(list, 'c1657');       // 6
+    strictEqual(pointsSpent(list), 14);
 });
 
 test('command card cost included', () => {
@@ -259,8 +259,8 @@ test('command card cost included', () => {
 });
 
 test('pointsRemaining = limit - spent', () => {
-    const list = addCard(makeList({ pointLimit: 75 }), 'c1653'); // spent 5
-    strictEqual(pointsRemaining(list), 70);
+    const list = addCard(makeList({ pointLimit: 75 }), 'c1656'); // spent 8
+    strictEqual(pointsRemaining(list), 67);
 });
 
 // ---------------------------------------------------------------------------
