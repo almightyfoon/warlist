@@ -338,7 +338,8 @@
       "c971",
       "c908",
       "c914",
-      "c1674"
+      "c1674",
+      "c1693"
     ],
     "excludedCardIds": [
       "c332",
@@ -441,7 +442,8 @@
       "c997",
       "c1011",
       "c939",
-      "c1674"
+      "c1674",
+      "c1693"
     ],
     "excludedCardIds": [],
     "includedKeywordsIds": [
@@ -577,7 +579,8 @@
       "c1004",
       "c959",
       "c975",
-      "c1674"
+      "c1674",
+      "c1693"
     ],
     "excludedCardIds": [],
     "includedKeywordsIds": [
@@ -863,7 +866,8 @@
       "c975",
       "c149",
       "c1055",
-      "c1674"
+      "c1674",
+      "c1693"
     ],
     "excludedCardIds": [
       "c643"
@@ -877,6 +881,26 @@
       "Winter Korps",
       "SKS-6 Cadre",
       "Annihilator"
+    ]
+  },
+  {
+    "id": "a42",
+    "name": "Covenant of the Flame",
+    "factionId": "f15",
+    "isUnlimited": false,
+    "includedCardIds": [
+      "c1004",
+      "c959",
+      "c975",
+      "c1674",
+      "c1693"
+    ],
+    "excludedCardIds": [],
+    "includedKeywordsIds": [
+      "k188"
+    ],
+    "includedKeywords": [
+      "Covenant of the Flame"
     ]
   }
 ]
