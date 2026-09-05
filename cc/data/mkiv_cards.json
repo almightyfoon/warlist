@@ -13209,6 +13209,23 @@
             "pointCost": 0
           }
         ]
+      },
+      {
+        "label": "Weapon Support Troopers",
+        "options": [
+          {
+            "name": "Auto Cannon",
+            "pointCost": 0
+          },
+          {
+            "name": "Rocketeer",
+            "pointCost": 0
+          },
+          {
+            "name": "Grenade Porter",
+            "pointCost": 0
+          }
+        ]
       }
     ]
   },
