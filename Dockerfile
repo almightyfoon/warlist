@@ -1,5 +1,5 @@
 # Stage 1: Compile TypeScript frontend
-FROM node:22-alpine AS frontend
+FROM node:26-alpine AS frontend
 
 # Single source of truth for the app version -- baked into the JS bundle here
 # and into the runtime image's default env below, so both stay in sync from
