@@ -63,7 +63,7 @@ jobs:
       - name: Export tests
         run: npx tsx tests/mk4/test-export.ts
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: backend/go.mod
           cache-dependency-path: backend/go.sum
