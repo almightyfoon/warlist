@@ -1,5 +1,5 @@
 # Stage 1: Compile TypeScript frontend
-FROM node:22-alpine AS frontend
+FROM node:26-alpine AS frontend
 
 # Single source of truth for the app version -- baked into the JS bundle here
 # and into the runtime image's default env below, so both stay in sync from
@@ -17,7 +17,7 @@ RUN cd cc && VITE_APP_VERSION=$APP_VERSION npx vite build
 
 
 # Stage 2: Compile Go backend
-FROM golang:1.26-alpine AS backend
+FROM golang:1.27-alpine AS backend
 
 WORKDIR /src
 
