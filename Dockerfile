@@ -17,7 +17,7 @@ RUN cd cc && VITE_APP_VERSION=$APP_VERSION npx vite build
 
 
 # Stage 2: Compile Go backend
-FROM golang:1.26-alpine AS backend
+FROM golang:1.27-alpine AS backend
 
 WORKDIR /src
 
