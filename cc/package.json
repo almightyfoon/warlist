@@ -8,7 +8,7 @@
   "devDependencies": {
     "@types/node": "^22.15.3",
     "undici-types": "^7.8.0",
-    "vite": "^6.3.4"
+    "vite": "^8.2.2"
   },
   "scripts": {
     "build": "vite build",
