@@ -9,7 +9,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/commander": "^2.9.2",
-    "@types/node": "^8.0.26",
+    "@types/node": "^26.4.1",
     "commander": "^2.11.0",
     "typescript": "^5.8.3"
   },
