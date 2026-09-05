@@ -127,7 +127,7 @@ jobs:
 
   # ── Build & Deploy ───────────────────────────────────────────────────────────
   # Runs only on push to main (not PRs). Requires:
-  #   Secrets: AWS_ROLE_ARN, EC2_INSTANCE_ID
+  #   Secrets: AWS_ROLE_ARN
   #
   # AWS setup (one-time):
   #   - IAM OIDC provider: token.actions.githubusercontent.com
@@ -136,8 +136,9 @@ jobs:
   #       ecr:BatchCheckLayerAvailability, ecr:GetDownloadUrlForLayer,
   #       ecr:BatchGetImage, ecr:InitiateLayerUpload, ecr:UploadLayerPart,
   #       ecr:CompleteLayerUpload, ecr:PutImage
-  #       ssm:SendCommand, ssm:GetCommandInvocation (scoped to the instance
-  #         ARN and the AWS-RunShellScript document)
+  #       ec2:DescribeInstances (resolves the ASG's current instance)
+  #       ssm:SendCommand (scoped to the AWS-RunShellScript document, and to
+  #         EC2 instances tagged Name=warlist), ssm:GetCommandInvocation
   #   - ECR repository named "warlist"
   #   - EC2 instance profile with ecr:GetAuthorizationToken +
   #       ecr:BatchGetImage + ecr:GetDownloadUrlForLayer +
@@ -146,11 +147,13 @@ jobs:
   # No SSH key pair or open port 22 required — deploy commands run over SSM
   # Run Command (aws ssm send-command), not ssh/scp.
   #
-  # EC2 first-run setup:
-  #   sudo mkdir -p /srv/warlist
-  #   sudo chown $USER /srv/warlist
-  #   cp docker-compose.yml Caddyfile /srv/warlist/
-  #   cp .env.example /srv/warlist/.env   # then fill in secrets
+  # The instance is ASG-managed (see iac/modules/warlist-host): its
+  # launch-template user_data does the full first-boot bootstrap itself
+  # (docker-compose.yml/Caddyfile/schema.sql fetched from this repo's main
+  # branch, secrets pulled from SSM Parameter Store, containers started), so
+  # there's no manual EC2 first-run setup step anymore -- a replaced instance
+  # comes back up as a fully working deploy on its own, no push to main
+  # required to restore it.
   build-and-deploy:
     name: Build & Deploy
     needs: test
@@ -218,11 +221,26 @@ jobs:
           docker push "$REGISTRY/$ECR_REPOSITORY:$TAG"
           docker push "$REGISTRY/$ECR_REPOSITORY:latest"
 
+      - name: Resolve current instance from the ASG
+        id: instance
+        run: |
+          # The instance is ASG-managed (see iac/modules/warlist-host) and
+          # gets replaced over time, so its ID can't be a static secret --
+          # resolve whichever one is currently running by its Name tag.
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=warlist" "Name=instance-state-name,Values=running" \
+            --query "Reservations[0].Instances[0].InstanceId" --output text)
+          if [ -z "$INSTANCE_ID" ] || [ "$INSTANCE_ID" = "None" ]; then
+            echo "::error::No running instance tagged Name=warlist found"
+            exit 1
+          fi
+          echo "instance_id=$INSTANCE_ID" >> "$GITHUB_OUTPUT"
+
       - name: Deploy via SSM
         env:
           REGISTRY: ${{ steps.build.outputs.registry }}
           IMAGE: ${{ steps.build.outputs.image }}
-          INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
+          INSTANCE_ID: ${{ steps.instance.outputs.instance_id }}
         run: |
           COMPOSE_B64=$(base64 -w0 docker-compose.yml)
           CADDY_B64=$(base64 -w0 Caddyfile)
