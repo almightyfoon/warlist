@@ -64,8 +64,10 @@ function saveListWithAuth(desc: string, data: string, onResult?: (msg: string) =
             onResult?.('Sign in via the ☰ menu — your list will save automatically after sign-in.');
         },
         () => {
-            saveMk4List(desc, data, () => {
-                onResult?.('Save failed — check your connection and try again.');
+            saveMk4List(desc, data, (status, message) => {
+                onResult?.(status === 400 && message
+                    ? message
+                    : 'Save failed — check your connection and try again.');
                 renderMainAuthArea();
             });
             onResult?.('Saved!');

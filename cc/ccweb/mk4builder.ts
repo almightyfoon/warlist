@@ -488,6 +488,7 @@ export class BuilderFlow extends Flow {
             const nameInput = el('input', 'mk4-list-name') as HTMLInputElement;
             nameInput.placeholder = 'List name…';
             nameInput.type = 'text';
+            nameInput.maxLength = 255; // matches saved_lists.description VARCHAR(255) in db/schema.sql
             listNameInput = nameInput;
             const saveBtn = el('button', 'mk4-save-btn', 'Save List');
             const statusDiv = el('div', 'mk4-save-status');

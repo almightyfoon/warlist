@@ -3,14 +3,20 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"strconv"
+	"unicode/utf8"
 
 	"warlist/backend/internal/auth"
 	"warlist/backend/internal/db"
 	"warlist/backend/internal/releases"
 )
+
+// Matches the saved_lists.description and folders.name VARCHAR(255) columns
+// in db/schema.sql.
+const maxNameLen = 255
 
 type Handler struct {
 	db       *db.DB
@@ -114,6 +120,11 @@ func (h *Handler) SaveList(w http.ResponseWriter, r *http.Request) {
 	desc := r.FormValue("desc")
 	listdata := r.FormValue("listdata")
 
+	if n := utf8.RuneCountInString(desc); n > maxNameLen {
+		writeError(w, http.StatusBadRequest, fmt.Sprintf("List name is too long (%d/%d characters).", n, maxNameLen))
+		return
+	}
+
 	if err := h.db.SaveList(r.Context(), uid, index, desc, listdata); err != nil {
 		slog.Error("SaveList", "err", err)
 		writeError(w, http.StatusInternalServerError, "DB error")
@@ -153,6 +164,11 @@ func (h *Handler) NewFolder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	name := r.FormValue("name")
+	if n := utf8.RuneCountInString(name); n > maxNameLen {
+		writeError(w, http.StatusBadRequest, fmt.Sprintf("Folder name is too long (%d/%d characters).", n, maxNameLen))
+		return
+	}
+
 	id, err := h.db.CreateFolder(r.Context(), uid, name)
 	if err != nil {
 		slog.Error("CreateFolder", "err", err)
