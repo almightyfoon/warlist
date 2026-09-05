@@ -85,6 +85,7 @@ export function restoreSession() {
     }
     if (!token || !email || exp <= Math.floor(Date.now() / 1000)) {
         try {
+            localStorage.removeItem('warlist_auth_email');
             localStorage.removeItem('warlist_auth_token');
             localStorage.removeItem('warlist_auth_exp');
             localStorage.removeItem('warlist_auth_pic');

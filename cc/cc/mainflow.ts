@@ -17,7 +17,8 @@ export class MainFlow extends ccweb.Flow {
                     Warmachine is the property of
                     <a href="https://steamforged.com">Steam Forged Games</a>.
                     Warlist is not affiliated with Steam Forged Games.
-                    Bugs and suggestions can be filed on <a href="https://github.com/almightyfoon/warlist" target="_blank">GitHub</a>.
+                    Bugs and suggestions can be filed on <a href="https://github.com/almightyfoon/warlist" target="_blank">GitHub</a>,
+                    or reach out directly at <a href="mailto:warlist.online@gmail.com">warlist.online@gmail.com</a>.
                 </div>
             </div>
 
