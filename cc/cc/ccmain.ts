@@ -1,6 +1,3 @@
-import { marked } from "marked";
-import DOMPurify from "dompurify";
-
 import * as ccweb from "../ccweb/ccweb";
 import * as g from "./g";
 
@@ -20,7 +17,9 @@ function localStorageGet(key: string): string | null {
 let _mainFlow: MainFlow = null;
 let _authAreaDiv: HTMLDivElement | null = null;
 let _newsTickerDiv: HTMLDivElement | null = null;
-let _latestPosts: any[] = [];
+let _newsFlow: ccweb.NewsFlow | null = null;
+let _latestPosts: ccweb.NewsPost[] = [];
+let _blogStatus: ccweb.NewsLoadStatus = 'loading';
 let _dataReady: Promise<void>;
 
 const NEWS_TICKER_LIMIT = 5;
@@ -174,22 +173,26 @@ function resizeWindow(): void {
 // Blog
 // ---------------------------------------------------------------------------
 
+// showBlog() renders from _latestPosts (kept up to date by fetchBlog(), which
+// runs once at boot) rather than fetching /blog itself, so opening the news
+// view never races the ticker's own fetch or double-hits the endpoint. If the
+// last fetch failed, opening the view retries it instead of leaving the user
+// stuck on a stale error until they reload the page.
 function showBlog(skipHistory?: boolean): void {
     closeEmblemDialog();
-    quitToMain();
     manageHistory('Updates', 'news', skipHistory);
 
-    document.getElementById('blog').innerHTML = `<div id="fbnews">
-        <div class="loadholder">
-            <span class="loadspinner"></span>
-            <span class="loadtext">Loading update history...</span>
-        </div>
-    </div>`;
-    document.getElementById('blog').style.display = '';
-    ccweb.ajax('/blog', gotBlog, () => {
-        const blogDiv = document.getElementById('blog');
-        if (blogDiv) blogDiv.innerHTML = '<div class="mk4-empty-slot">Could not load updates — check your connection.</div>';
-    });
+    if (_newsFlow === null) {
+        _newsFlow = new ccweb.NewsFlow(quitToMain);
+    }
+    _newsFlow.show();
+
+    if (_blogStatus === 'error') {
+        _blogStatus = 'loading';
+        fetchBlog();
+    }
+    _newsFlow.renderPosts(_latestPosts, _blogStatus);
+    resizeWindow();
 }
 
 function makeDiv(cls: string, text?: string): HTMLDivElement {
@@ -199,14 +202,11 @@ function makeDiv(cls: string, text?: string): HTMLDivElement {
     return d;
 }
 
-// Release bodies are Markdown (GitHub renders them that way too); parse and
-// sanitize before inserting, since this is maintainer-authored HTML now.
-function makeMarkdownDiv(cls: string, markdown: string): HTMLDivElement {
-    const d = document.createElement('div');
-    d.className = cls;
-    const html = marked.parse(markdown, { async: false, breaks: true, gfm: true });
-    d.innerHTML = DOMPurify.sanitize(html);
-    return d;
+function fetchBlog(): void {
+    ccweb.ajax('/blog', gotBlog, () => {
+        _blogStatus = 'error';
+        _newsFlow?.renderPosts(_latestPosts, _blogStatus);
+    });
 }
 
 function gotBlog(text: string): void {
@@ -215,23 +215,10 @@ function gotBlog(text: string): void {
     if (!Array.isArray(blog)) return;
     // GitHub's release list (the source for this data) is already newest-first.
     _latestPosts = blog.filter(post => post.post_type === '1');
-
-    const blogDiv = document.getElementById('blog');
-    if (blogDiv) {
-        blogDiv.innerHTML = '';
-        for (const post of _latestPosts) {
-            const outer = makeDiv('blogOuter');
-            outer.appendChild(makeDiv('blogRevision'));
-            outer.appendChild(makeDiv('blogDate',      String(post.date_posted ?? '')));
-            outer.appendChild(makeDiv('blogRevNumber', String(post.title       ?? '')));
-            outer.appendChild(makeMarkdownDiv('blogRevText', String(post.post_text ?? '')));
-            outer.appendChild(makeDiv('blogSep'));
-            blogDiv.appendChild(outer);
-        }
-        blogDiv.appendChild(makeDiv('blogEnd'));
-    }
+    _blogStatus = 'loaded';
 
     renderNewsTicker();
+    _newsFlow?.renderPosts(_latestPosts, _blogStatus);
 }
 
 function renderNewsTicker(): void {
@@ -447,6 +434,7 @@ function loadBody(): void {
     _emblemMenu = document.getElementById('emblemmenu');
     document.getElementById('ccgearsbutton').onclick = clickMainMenu;
     document.getElementById('ccmenubutton').onclick  = clickMainMenu;
+    document.getElementById('cctitle').onclick       = quitToMain;
 
     g.init();
     g.restoreSession();
@@ -459,7 +447,7 @@ function loadBody(): void {
     if (search && route(false)) { /* routed */ }
     else showMainFlow();
 
-    ccweb.ajax('/blog', gotBlog);
+    fetchBlog();
     resizeWindow();
 }
 

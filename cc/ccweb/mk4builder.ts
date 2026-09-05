@@ -1,4 +1,4 @@
-import { Flow } from './widgets';
+import { Flow, el } from './widgets';
 import { Mk4Data, Mk4Army, Mk4Card, LEADER_TYPES, COHORT_TYPES } from '../ccapi/mk4data';
 import {
     Mk4List, ListEntry, createList, addCard, removeEntry, setLeader,
@@ -14,15 +14,6 @@ import { listToText, encodeList } from '../ccapi/mk4export';
 // ---------------------------------------------------------------------------
 // Tiny DOM helpers
 // ---------------------------------------------------------------------------
-
-function el<K extends keyof HTMLElementTagNameMap>(
-    tag: K, cls?: string, text?: string
-): HTMLElementTagNameMap[K] {
-    const e = document.createElement(tag);
-    if (cls)  e.className = cls;
-    if (text) e.textContent = text;
-    return e;
-}
 
 function sel(options: { value: string; label: string }[], cls: string): HTMLSelectElement {
     const s = el('select', cls);
@@ -488,7 +479,19 @@ export class BuilderFlow extends Flow {
             const nameInput = el('input', 'mk4-list-name') as HTMLInputElement;
             nameInput.placeholder = 'List name…';
             nameInput.type = 'text';
-            nameInput.maxLength = 255; // matches saved_lists.description VARCHAR(255) in db/schema.sql
+            // Caps at 255 Unicode code points to match the backend's
+            // utf8.RuneCountInString check against saved_lists.description
+            // VARCHAR(255) (db/schema.sql) -- the native maxlength attribute
+            // counts UTF-16 code units instead, which undercounts the limit
+            // for names using astral-plane characters (e.g. emoji).
+            nameInput.addEventListener('input', () => {
+                const chars = Array.from(nameInput.value);
+                if (chars.length <= 255) return;
+                const caret = nameInput.selectionStart ?? chars.length;
+                nameInput.value = chars.slice(0, 255).join('');
+                const newCaret = Math.min(caret, nameInput.value.length);
+                nameInput.setSelectionRange(newCaret, newCaret);
+            });
             listNameInput = nameInput;
             const saveBtn = el('button', 'mk4-save-btn', 'Save List');
             const statusDiv = el('div', 'mk4-save-status');
