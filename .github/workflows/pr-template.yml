@@ -9,6 +9,7 @@ jobs:
   check-description:
     name: Check PR description
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
     permissions:
       contents: read
     steps:
