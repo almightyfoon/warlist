@@ -1,6 +1,3 @@
-import { marked } from "marked";
-import DOMPurify from "dompurify";
-
 import * as ccweb from "../ccweb/ccweb";
 import * as g from "./g";
 
@@ -19,7 +16,13 @@ function localStorageGet(key: string): string | null {
 
 let _mainFlow: MainFlow = null;
 let _authAreaDiv: HTMLDivElement | null = null;
+let _newsTickerDiv: HTMLDivElement | null = null;
+let _newsFlow: ccweb.NewsFlow | null = null;
+let _latestPosts: ccweb.NewsPost[] = [];
+let _blogStatus: ccweb.NewsLoadStatus = 'loading';
 let _dataReady: Promise<void>;
+
+const NEWS_TICKER_LIMIT = 5;
 
 // ---------------------------------------------------------------------------
 // Theme
@@ -60,8 +63,10 @@ function saveListWithAuth(desc: string, data: string, onResult?: (msg: string) =
             onResult?.('Sign in via the ☰ menu — your list will save automatically after sign-in.');
         },
         () => {
-            saveMk4List(desc, data, () => {
-                onResult?.('Save failed — check your connection and try again.');
+            saveMk4List(desc, data, (status, message) => {
+                onResult?.(status === 400 && message
+                    ? message
+                    : 'Save failed — check your connection and try again.');
                 renderMainAuthArea();
             });
             onResult?.('Saved!');
@@ -168,22 +173,26 @@ function resizeWindow(): void {
 // Blog
 // ---------------------------------------------------------------------------
 
+// showBlog() renders from _latestPosts (kept up to date by fetchBlog(), which
+// runs once at boot) rather than fetching /blog itself, so opening the news
+// view never races the ticker's own fetch or double-hits the endpoint. If the
+// last fetch failed, opening the view retries it instead of leaving the user
+// stuck on a stale error until they reload the page.
 function showBlog(skipHistory?: boolean): void {
     closeEmblemDialog();
-    quitToMain();
     manageHistory('Updates', 'news', skipHistory);
 
-    document.getElementById('blog').innerHTML = `<div id="fbnews">
-        <div class="loadholder">
-            <span class="loadspinner"></span>
-            <span class="loadtext">Loading update history...</span>
-        </div>
-    </div>`;
-    document.getElementById('blog').style.display = '';
-    ccweb.ajax('/blog', gotBlog, () => {
-        const blogDiv = document.getElementById('blog');
-        if (blogDiv) blogDiv.innerHTML = '<div class="mk4-empty-slot">Could not load updates — check your connection.</div>';
-    });
+    if (_newsFlow === null) {
+        _newsFlow = new ccweb.NewsFlow(quitToMain);
+    }
+    _newsFlow.show();
+
+    if (_blogStatus === 'error') {
+        _blogStatus = 'loading';
+        fetchBlog();
+    }
+    _newsFlow.renderPosts(_latestPosts, _blogStatus);
+    resizeWindow();
 }
 
 function makeDiv(cls: string, text?: string): HTMLDivElement {
@@ -193,34 +202,53 @@ function makeDiv(cls: string, text?: string): HTMLDivElement {
     return d;
 }
 
-// Release bodies are Markdown (GitHub renders them that way too); parse and
-// sanitize before inserting, since this is maintainer-authored HTML now.
-function makeMarkdownDiv(cls: string, markdown: string): HTMLDivElement {
-    const d = document.createElement('div');
-    d.className = cls;
-    const html = marked.parse(markdown, { async: false, breaks: true, gfm: true });
-    d.innerHTML = DOMPurify.sanitize(html);
-    return d;
+function fetchBlog(): void {
+    ccweb.ajax('/blog', gotBlog, () => {
+        _blogStatus = 'error';
+        _newsFlow?.renderPosts(_latestPosts, _blogStatus);
+    });
 }
 
 function gotBlog(text: string): void {
-    let blog: any[];
+    let blog: unknown;
     try { blog = JSON.parse(text); } catch { return; }
-    const blogDiv = document.getElementById('blog');
-    if (!blogDiv) return;
-    blogDiv.innerHTML = '';
+    if (!Array.isArray(blog)) return;
+    // GitHub's release list (the source for this data) is already newest-first.
+    _latestPosts = blog.filter(post => post.post_type === '1');
+    _blogStatus = 'loaded';
 
-    for (const post of blog) {
-        if (post.post_type !== '1') continue;
-        const outer = makeDiv('blogOuter');
-        outer.appendChild(makeDiv('blogRevision'));
-        outer.appendChild(makeDiv('blogDate',      String(post.date_posted ?? '')));
-        outer.appendChild(makeDiv('blogRevNumber', String(post.title       ?? '')));
-        outer.appendChild(makeMarkdownDiv('blogRevText', String(post.post_text ?? '')));
-        outer.appendChild(makeDiv('blogSep'));
-        blogDiv.appendChild(outer);
+    renderNewsTicker();
+    _newsFlow?.renderPosts(_latestPosts, _blogStatus);
+}
+
+function renderNewsTicker(): void {
+    if (!_newsTickerDiv) return;
+    _newsTickerDiv.innerHTML = '';
+
+    if (_latestPosts.length === 0) {
+        _newsTickerDiv.style.display = 'none';
+        return;
     }
-    blogDiv.appendChild(makeDiv('blogEnd'));
+    _newsTickerDiv.style.display = '';
+
+    _newsTickerDiv.appendChild(makeDiv('mk4-news-ticker-title', 'Latest News'));
+
+    const openBlog = () => showBlog();
+
+    for (const post of _latestPosts.slice(0, NEWS_TICKER_LIMIT)) {
+        const item = document.createElement('div');
+        item.className = 'mk4-news-ticker-item';
+        item.onclick = openBlog;
+        item.appendChild(makeDiv('mk4-news-ticker-date',     String(post.date_posted ?? '')));
+        item.appendChild(makeDiv('mk4-news-ticker-headline', String(post.title       ?? '')));
+        _newsTickerDiv.appendChild(item);
+    }
+
+    if (_latestPosts.length > NEWS_TICKER_LIMIT) {
+        const more = makeDiv('mk4-news-ticker-more', `See all updates (${_latestPosts.length}) →`);
+        more.onclick = openBlog;
+        _newsTickerDiv.appendChild(more);
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -353,7 +381,12 @@ function renderMainAuthArea(): void {
 
 function initializeMainFlow(): void {
     const abovefold = document.getElementById('abovefold') as HTMLDivElement;
-    abovefold.appendChild(new ccweb.Button({
+
+    const mainCol = document.createElement('div');
+    mainCol.className = 'mk4-abovefold-main';
+    abovefold.appendChild(mainCol);
+
+    mainCol.appendChild(new ccweb.Button({
         text: 'Build a List',
         size: 'mediumfixed',
         click: () => showMk4Builder(),
@@ -361,13 +394,24 @@ function initializeMainFlow(): void {
 
     _authAreaDiv = document.createElement('div');
     _authAreaDiv.className = 'mk4-main-auth-area';
-    abovefold.appendChild(_authAreaDiv);
+    mainCol.appendChild(_authAreaDiv);
 
     renderMainAuthArea();
 
     // Refresh auth area after sign-in completes (works for first sign-in on this page load).
     if (!(<any>window)._loginCallback) (<any>window)._loginCallback = [];
     (<any>window)._loginCallback.push(() => renderMainAuthArea());
+
+    _newsTickerDiv = document.createElement('div');
+    _newsTickerDiv.className = 'mk4-news-ticker';
+    _newsTickerDiv.style.display = 'none';
+    abovefold.appendChild(_newsTickerDiv);
+
+    // A share/builder/news link boot skips this function entirely at page load
+    // (see loadBody's route() branch), so /blog may have already resolved and
+    // populated _latestPosts by the time the user navigates back to main and
+    // this div is created for the first time — render whatever's cached now.
+    renderNewsTicker();
 }
 
 function showMainFlow(): void {
@@ -390,6 +434,7 @@ function loadBody(): void {
     _emblemMenu = document.getElementById('emblemmenu');
     document.getElementById('ccgearsbutton').onclick = clickMainMenu;
     document.getElementById('ccmenubutton').onclick  = clickMainMenu;
+    document.getElementById('cctitle').onclick       = quitToMain;
 
     g.init();
     g.restoreSession();
@@ -402,7 +447,7 @@ function loadBody(): void {
     if (search && route(false)) { /* routed */ }
     else showMainFlow();
 
-    ccweb.ajax('/blog', gotBlog);
+    fetchBlog();
     resizeWindow();
 }
 

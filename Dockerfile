@@ -4,7 +4,7 @@ FROM node:26-alpine AS frontend
 # Single source of truth for the app version -- baked into the JS bundle here
 # and into the runtime image's default env below, so both stay in sync from
 # one line. Bump this, don't touch anything else, to cut a new version.
-ARG APP_VERSION=0.9.0
+ARG APP_VERSION=1.0.0
 
 WORKDIR /src
 
@@ -32,7 +32,7 @@ RUN CGO_ENABLED=0 GOFLAGS=-mod=mod \
 # Stage 3: Runtime image
 FROM alpine:3.24
 
-ARG APP_VERSION=0.9.0
+ARG APP_VERSION=1.0.0
 ENV APP_VERSION=$APP_VERSION
 
 # Upgrade first: the base tag ships whatever package versions were current when

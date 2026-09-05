@@ -1,11 +1,11 @@
 // Network helpers for saved lists. All Mk3 UI removed.
 
-export function ajaxPost(url: string, callback: (resp: string) => void, arg: string, onError?: () => void): void {
+export function ajaxPost(url: string, callback: (resp: string) => void, arg: string, onError?: (status: number, message: string) => void): void {
     const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState === 4) {
             if (xhttp.status === 200) callback(xhttp.responseText);
-            else onError?.();
+            else onError?.(xhttp.status, xhttp.responseText.trim());
         }
     };
     xhttp.open('POST', url, true);
@@ -25,7 +25,7 @@ export function restGet(url: string, callback: (resp: string) => void, onError?:
     xhttp.send();
 }
 
-function postList(index: number, desc: string, listData: string, onError?: () => void): void {
+function postList(index: number, desc: string, listData: string, onError?: (status: number, message: string) => void): void {
     ajaxPost('/y', () => {},
         'token='     + encodeURIComponent((<any>window)._idToken)
         + '&logintype=' + encodeURIComponent((<any>window)._loginType)
@@ -51,14 +51,14 @@ export interface SavedListMeta { offset: number; description: string; listdata: 
 export let savedLists: { [offset: number]: SavedListMeta } = {};
 
 // Save a Mk4 list blob to the next available slot.
-export function saveMk4List(desc: string, data: string, onError?: () => void): void {
+export function saveMk4List(desc: string, data: string, onError?: (status: number, message: string) => void): void {
     let max = 0;
     for (const k in savedLists) { if (+k > max) max = +k; }
     const slot = max + 1;
     postList(slot, desc, data,
-        () => {
+        (status, message) => {
             delete savedLists[slot];
-            onError?.();
+            onError?.(status, message);
         }
     );
     savedLists[slot] = { offset: slot, description: desc, listdata: data };

@@ -54,30 +54,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', end
 	position: relative;
 }
 
-#blog
-{
-    width: 750px;
-    margin-left: auto;
-    margin-right: auto;
-
-
-    margin-top: 31px;
-
-    min-height: calc(100vh - 31px);
-    overflow-y: auto;
-
-    border-left: 2px solid black;
-    border-right: 2px solid black;
-    box-shadow: black 2px 2px 6px;
-
-background: #86aecc;
-background: -moz-linear-gradient(left,  #86aecc 0%, #d4e4ef 4%, #d4e4ef 96%, #86aecc 100%);
-background: -webkit-linear-gradient(left,  #86aecc 0%,#d4e4ef 4%,#d4e4ef 96%,#86aecc 100%);
-background: linear-gradient(to right,  #86aecc 0%,#d4e4ef 4%,#d4e4ef 96%,#86aecc 100%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#86aecc', endColorstr='#86aecc',GradientType=1 );
-
-}
-
 #tournaments
 {
     width: 853px;
@@ -686,6 +662,7 @@ font-size: 16pt;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
 }
 
 
@@ -1255,117 +1232,74 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#828c95', end
 }
 
 
-.blogOuter
-{
-    width: 700px;
-    margin-left: auto;
-    margin-right: auto;
+/* =========================================================
+   News / Updates flow
+   ========================================================= */
 
-    padding: 4px;
-
-    position: relative;
-
-
-    margin-bottom: 6px;
-
-    min-height: 36px;
-
-    border: 1px solid black;
+.mk4news .mk4news-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 8px 16px 40px;
+    padding-top: 56px;
 }
 
-.blogDate
-{
-    position: absolute;
+.mk4news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mk4news-post {
+    background: var(--card-bg, #f2f2f2);
+    border-radius: 4px;
+    padding: 14px 16px;
+}
+
+.mk4news-post-date {
+    font-size: 12px;
+    color: var(--subheader-color, #888);
+}
+
+.mk4news-post-title {
+    font-family: var(--header-font);
+    font-size: 20px;
+    margin: 2px 0 8px;
+    color: var(--card-textcolor, #333);
+}
+
+.mk4news-post-body {
     font-size: 14px;
-
-    top: 20px;
-    left: 6px;
-
-    color: black;
+    line-height: 1.5;
+    color: var(--card-textcolor, #333);
 }
 
-.blogRevision
-{
-    font-family: icomoon;
-    font-size: 18px;
-    color: white;
-    text-shadow: 0px 0px 1px black, 1px 1px 2px black;
-    position: absolute;
-    top: 4px;
-    left: 2px;
-}
-
-.blogRevision::after
-{
-    content: "\e935";
-}
-
-.blogRevNumber
-{
-    font-size: 18px;
-    color: white;
-    text-shadow: 0px 0px 1px black, 1px 1px 2px black;
-    position: absolute;
-    top: -2px;
-    left: 26px;
-}
-
-.blogRevText
-{
-    font-size: 14pt;
-    line-height: 1.4;
-    margin-left: 120px;
-    width: 580px;
-}
-
-.blogRevText p,
-.blogRevText ul,
-.blogRevText ol
-{
+.mk4news-post-body p,
+.mk4news-post-body ul,
+.mk4news-post-body ol {
     margin: 0 0 8px 0;
 }
 
-.blogRevText ul,
-.blogRevText ol
-{
+.mk4news-post-body ul,
+.mk4news-post-body ol {
     padding-left: 22px;
 }
 
-.blogRevText code
-{
+.mk4news-post-body code {
     font-size: 0.9em;
     background: rgba(0, 0, 0, 0.08);
     padding: 1px 4px;
     border-radius: 3px;
 }
 
-.blogRevText pre code
-{
+.mk4news-post-body pre code {
     display: block;
     padding: 8px;
     overflow-x: auto;
 }
 
-.blogRevText a
-{
-    color: inherit;
+.mk4news-post-body a {
+    color: var(--link-color, #46a);
     text-decoration: underline;
-}
-
-
-.blogSep
-{
-    width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-
-    height: 3px;
-
-}
-
-.blogEnd
-{
-    height: 50px;
 }
 
 .eventcover
@@ -1775,27 +1709,6 @@ div #versioninfo
     font-size: 14pt;
     display: inline-block;
 }
-
-#fbnews > .fb-post
-{
-    margin-top: 8px;
-    margin-bottom: 2px;
-
-    border-radius: 2px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);    
-
-    background-color: #f2f2f2;
-    
-    margin-left: 137px;
-}
-
-.uimobileflow #fbnews > .fb-post 
-{
-    margin-left: 0px;
-}
-
-
-
 
 .conflictchamber
 div.uicard.mapcard 
@@ -2937,6 +2850,10 @@ div.eventteamtitle
 #abovefold
 {
     margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 16px;
 }
 
 .dgilogo 
@@ -3032,11 +2949,11 @@ div.ccdisclaimer
     color: var(--card-textcolor);
 }
 
-#emblem 
+#emblem
 {
     width: 160px;
     height: 160px;
-    background: url(/img/emblem160.png);
+    background: url(/img/warlist-mark.svg) center / contain no-repeat;
     cursor: pointer;
 }
 
@@ -3613,6 +3530,17 @@ div.formTH .typedrop {
     margin-top: 4px;
 }
 
+/* Forces the disclaimer onto its own row so the two flex columns below it
+   (main/ticker) never have to share row space with it at any viewport width. */
+#abovefold > .ccdisclaimer {
+    flex-basis: 100%;
+}
+
+.mk4-abovefold-main {
+    flex: 1 1 420px;
+    min-width: 280px;
+}
+
 /* Main page auth / My Lists area */
 .mk4-main-auth-area {
     margin-top: 16px;
@@ -3620,6 +3548,47 @@ div.formTH .typedrop {
     background: var(--card-bg, #f2f2f2);
     border-radius: 4px;
     max-width: 420px;
+}
+
+/* Front-page news ticker, alongside the auth/saved-lists column */
+.mk4-news-ticker {
+    flex: 1 1 320px;
+    max-width: 420px;
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--card-bg, #f2f2f2);
+    border-radius: 4px;
+}
+.mk4-news-ticker-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--card-textcolor, #333);
+}
+.mk4-news-ticker-item {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.12));
+    cursor: pointer;
+}
+.mk4-news-ticker-item:last-child {
+    border-bottom: none;
+}
+.mk4-news-ticker-item:hover .mk4-news-ticker-headline {
+    text-decoration: underline;
+}
+.mk4-news-ticker-date {
+    font-size: 11px;
+    color: var(--subheader-color, #888);
+}
+.mk4-news-ticker-headline {
+    font-size: 13px;
+    color: var(--card-textcolor, #333);
+}
+.mk4-news-ticker-more {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--link-color, #46a);
+    cursor: pointer;
 }
 .mk4-signin-blurb {
     font-size: 13px;
