@@ -64,6 +64,59 @@ jobs:
         run: go vet ./...
         working-directory: backend
 
+  # ── PR Image Scan (report-only) ────────────────────────────────────────────
+  # Runs only on PRs. Builds a native amd64 image — skipping the QEMU arm64
+  # cross-build that the deploy path needs, since Alpine package versions
+  # don't differ across arches — and scans it with Trivy in report-only mode
+  # (exit-code 0). Findings are surfaced via SARIF upload to the Security tab
+  # and a job summary; nothing here ever blocks the merge. The blocking scan
+  # on main (build-and-deploy, below) is unchanged.
+  scan-pr:
+    name: Scan PR image (non-blocking)
+    needs: test
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image (amd64)
+        run: docker build -t warlist:pr-${{ github.sha }} .
+
+      - name: Scan image with Trivy (report-only)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: warlist:pr-${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          exit-code: '0'
+          ignore-unfixed: true
+          limit-severities-for-sarif: true
+
+      - name: Upload Trivy results to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-pr
+
+      - name: Summarize scan in job summary
+        if: always()
+        run: |
+          COUNT=$(jq '[.runs[].results[]] | length' trivy-results.sarif)
+          {
+            echo "### Trivy image scan (report-only)"
+            echo ""
+            echo "Found **$COUNT** CRITICAL/HIGH finding(s) with fixes available."
+            echo ""
+            echo "This scan is informational only and does not block the merge. See the [Security tab](${{ github.server_url }}/${{ github.repository }}/security/code-scanning) for details."
+          } >> "$GITHUB_STEP_SUMMARY"
+
   # ── Build & Deploy ───────────────────────────────────────────────────────────
   # Runs only on push to main (not PRs). Requires:
   #   Secrets: AWS_ROLE_ARN, EC2_INSTANCE_ID
@@ -147,6 +200,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-results.sarif
+          category: trivy-main
 
       - name: Push image to ECR
         env:
