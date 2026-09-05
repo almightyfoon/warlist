@@ -144,32 +144,3 @@ func (d *DB) CreateFolder(ctx context.Context, uid int, name string) (int, error
 	return int(id), nil
 }
 
-// --- Blog ---
-
-type BlogPost struct {
-	PostType string `json:"post_type"`
-	Date     string `json:"date_posted"`
-	Title    string `json:"title"`
-	Text     string `json:"post_text"`
-}
-
-func (d *DB) GetBlogPosts(ctx context.Context) ([]BlogPost, error) {
-	rows, err := d.pool.QueryContext(ctx,
-		"SELECT post_type, DATE_FORMAT(posted, '%M %D %Y'), title, post_text FROM blog ORDER BY posted DESC",
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var posts []BlogPost
-	for rows.Next() {
-		var p BlogPost
-		if err := rows.Scan(&p.PostType, &p.Date, &p.Title, &p.Text); err != nil {
-			return nil, err
-		}
-		posts = append(posts, p)
-	}
-	return posts, rows.Err()
-}
-

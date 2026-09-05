@@ -9,6 +9,7 @@ import (
 
 	"warlist/backend/internal/auth"
 	"warlist/backend/internal/db"
+	"warlist/backend/internal/releases"
 )
 
 type Handler struct {
@@ -163,14 +164,14 @@ func (h *Handler) NewFolder(w http.ResponseWriter, r *http.Request) {
 
 // GET /blog
 func (h *Handler) GetBlog(w http.ResponseWriter, r *http.Request) {
-	posts, err := h.db.GetBlogPosts(r.Context())
+	posts, err := releases.GetPosts(r.Context())
 	if err != nil {
-		slog.Error("GetBlogPosts", "err", err)
-		writeError(w, http.StatusInternalServerError, "DB error")
+		slog.Error("GetPosts", "err", err)
+		writeError(w, http.StatusInternalServerError, "could not load releases")
 		return
 	}
 	if posts == nil {
-		posts = []db.BlogPost{}
+		posts = []releases.Post{}
 	}
 	writeJSON(w, posts)
 }

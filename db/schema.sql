@@ -29,15 +29,6 @@ CREATE TABLE IF NOT EXISTS saved_lists (
     CONSTRAINT fk_list_owner FOREIGN KEY (uid) REFERENCES google_login(uid) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS blog (
-    uid       INT          NOT NULL AUTO_INCREMENT,
-    post_type VARCHAR(32)  NOT NULL DEFAULT '',
-    posted    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    title     VARCHAR(255) NOT NULL DEFAULT '',
-    post_text TEXT         NOT NULL,
-    PRIMARY KEY (uid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE IF NOT EXISTS events (
     uid        INT          NOT NULL AUTO_INCREMENT,
     name       VARCHAR(255) NOT NULL DEFAULT '',
