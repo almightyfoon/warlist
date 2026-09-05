@@ -19,7 +19,11 @@ function localStorageGet(key: string): string | null {
 
 let _mainFlow: MainFlow = null;
 let _authAreaDiv: HTMLDivElement | null = null;
+let _newsTickerDiv: HTMLDivElement | null = null;
+let _latestPosts: any[] = [];
 let _dataReady: Promise<void>;
+
+const NEWS_TICKER_LIMIT = 5;
 
 // ---------------------------------------------------------------------------
 // Theme
@@ -204,23 +208,58 @@ function makeMarkdownDiv(cls: string, markdown: string): HTMLDivElement {
 }
 
 function gotBlog(text: string): void {
-    let blog: any[];
+    let blog: unknown;
     try { blog = JSON.parse(text); } catch { return; }
-    const blogDiv = document.getElementById('blog');
-    if (!blogDiv) return;
-    blogDiv.innerHTML = '';
+    if (!Array.isArray(blog)) return;
+    // GitHub's release list (the source for this data) is already newest-first.
+    _latestPosts = blog.filter(post => post.post_type === '1');
 
-    for (const post of blog) {
-        if (post.post_type !== '1') continue;
-        const outer = makeDiv('blogOuter');
-        outer.appendChild(makeDiv('blogRevision'));
-        outer.appendChild(makeDiv('blogDate',      String(post.date_posted ?? '')));
-        outer.appendChild(makeDiv('blogRevNumber', String(post.title       ?? '')));
-        outer.appendChild(makeMarkdownDiv('blogRevText', String(post.post_text ?? '')));
-        outer.appendChild(makeDiv('blogSep'));
-        blogDiv.appendChild(outer);
+    const blogDiv = document.getElementById('blog');
+    if (blogDiv) {
+        blogDiv.innerHTML = '';
+        for (const post of _latestPosts) {
+            const outer = makeDiv('blogOuter');
+            outer.appendChild(makeDiv('blogRevision'));
+            outer.appendChild(makeDiv('blogDate',      String(post.date_posted ?? '')));
+            outer.appendChild(makeDiv('blogRevNumber', String(post.title       ?? '')));
+            outer.appendChild(makeMarkdownDiv('blogRevText', String(post.post_text ?? '')));
+            outer.appendChild(makeDiv('blogSep'));
+            blogDiv.appendChild(outer);
+        }
+        blogDiv.appendChild(makeDiv('blogEnd'));
     }
-    blogDiv.appendChild(makeDiv('blogEnd'));
+
+    renderNewsTicker();
+}
+
+function renderNewsTicker(): void {
+    if (!_newsTickerDiv) return;
+    _newsTickerDiv.innerHTML = '';
+
+    if (_latestPosts.length === 0) {
+        _newsTickerDiv.style.display = 'none';
+        return;
+    }
+    _newsTickerDiv.style.display = '';
+
+    _newsTickerDiv.appendChild(makeDiv('mk4-news-ticker-title', 'Latest News'));
+
+    const openBlog = () => showBlog();
+
+    for (const post of _latestPosts.slice(0, NEWS_TICKER_LIMIT)) {
+        const item = document.createElement('div');
+        item.className = 'mk4-news-ticker-item';
+        item.onclick = openBlog;
+        item.appendChild(makeDiv('mk4-news-ticker-date',     String(post.date_posted ?? '')));
+        item.appendChild(makeDiv('mk4-news-ticker-headline', String(post.title       ?? '')));
+        _newsTickerDiv.appendChild(item);
+    }
+
+    if (_latestPosts.length > NEWS_TICKER_LIMIT) {
+        const more = makeDiv('mk4-news-ticker-more', `See all updates (${_latestPosts.length}) →`);
+        more.onclick = openBlog;
+        _newsTickerDiv.appendChild(more);
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -353,7 +392,12 @@ function renderMainAuthArea(): void {
 
 function initializeMainFlow(): void {
     const abovefold = document.getElementById('abovefold') as HTMLDivElement;
-    abovefold.appendChild(new ccweb.Button({
+
+    const mainCol = document.createElement('div');
+    mainCol.className = 'mk4-abovefold-main';
+    abovefold.appendChild(mainCol);
+
+    mainCol.appendChild(new ccweb.Button({
         text: 'Build a List',
         size: 'mediumfixed',
         click: () => showMk4Builder(),
@@ -361,13 +405,24 @@ function initializeMainFlow(): void {
 
     _authAreaDiv = document.createElement('div');
     _authAreaDiv.className = 'mk4-main-auth-area';
-    abovefold.appendChild(_authAreaDiv);
+    mainCol.appendChild(_authAreaDiv);
 
     renderMainAuthArea();
 
     // Refresh auth area after sign-in completes (works for first sign-in on this page load).
     if (!(<any>window)._loginCallback) (<any>window)._loginCallback = [];
     (<any>window)._loginCallback.push(() => renderMainAuthArea());
+
+    _newsTickerDiv = document.createElement('div');
+    _newsTickerDiv.className = 'mk4-news-ticker';
+    _newsTickerDiv.style.display = 'none';
+    abovefold.appendChild(_newsTickerDiv);
+
+    // A share/builder/news link boot skips this function entirely at page load
+    // (see loadBody's route() branch), so /blog may have already resolved and
+    // populated _latestPosts by the time the user navigates back to main and
+    // this div is created for the first time — render whatever's cached now.
+    renderNewsTicker();
 }
 
 function showMainFlow(): void {

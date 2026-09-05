@@ -2937,6 +2937,10 @@ div.eventteamtitle
 #abovefold
 {
     margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 16px;
 }
 
 .dgilogo 
@@ -3613,6 +3617,17 @@ div.formTH .typedrop {
     margin-top: 4px;
 }
 
+/* Forces the disclaimer onto its own row so the two flex columns below it
+   (main/ticker) never have to share row space with it at any viewport width. */
+#abovefold > .ccdisclaimer {
+    flex-basis: 100%;
+}
+
+.mk4-abovefold-main {
+    flex: 1 1 420px;
+    min-width: 280px;
+}
+
 /* Main page auth / My Lists area */
 .mk4-main-auth-area {
     margin-top: 16px;
@@ -3620,6 +3635,47 @@ div.formTH .typedrop {
     background: var(--card-bg, #f2f2f2);
     border-radius: 4px;
     max-width: 420px;
+}
+
+/* Front-page news ticker, alongside the auth/saved-lists column */
+.mk4-news-ticker {
+    flex: 1 1 320px;
+    max-width: 420px;
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--card-bg, #f2f2f2);
+    border-radius: 4px;
+}
+.mk4-news-ticker-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--card-textcolor, #333);
+}
+.mk4-news-ticker-item {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.12));
+    cursor: pointer;
+}
+.mk4-news-ticker-item:last-child {
+    border-bottom: none;
+}
+.mk4-news-ticker-item:hover .mk4-news-ticker-headline {
+    text-decoration: underline;
+}
+.mk4-news-ticker-date {
+    font-size: 11px;
+    color: var(--subheader-color, #888);
+}
+.mk4-news-ticker-headline {
+    font-size: 13px;
+    color: var(--card-textcolor, #333);
+}
+.mk4-news-ticker-more {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--link-color, #46a);
+    cursor: pointer;
 }
 .mk4-signin-blurb {
     font-size: 13px;
