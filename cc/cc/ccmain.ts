@@ -1,3 +1,6 @@
+import { marked } from "marked";
+import DOMPurify from "dompurify";
+
 import * as ccweb from "../ccweb/ccweb";
 import * as g from "./g";
 
@@ -110,6 +113,12 @@ function initializeEmblem(): void {
         click: () => showMk4Builder(),
     }).container, userPanel);
 
+    _emblemMenu.insertBefore(new ccweb.Button({
+        text: 'Updates',
+        size: 'mediumfixed',
+        click: () => showBlog(),
+    }).container, userPanel);
+
     const theme = new ccweb.UIElement('themesel');
     const sp = document.createElement('span');
     sp.textContent = 'Theme:';
@@ -160,6 +169,7 @@ function resizeWindow(): void {
 // ---------------------------------------------------------------------------
 
 function showBlog(skipHistory?: boolean): void {
+    closeEmblemDialog();
     quitToMain();
     manageHistory('Updates', 'news', skipHistory);
 
@@ -183,6 +193,16 @@ function makeDiv(cls: string, text?: string): HTMLDivElement {
     return d;
 }
 
+// Release bodies are Markdown (GitHub renders them that way too); parse and
+// sanitize before inserting, since this is maintainer-authored HTML now.
+function makeMarkdownDiv(cls: string, markdown: string): HTMLDivElement {
+    const d = document.createElement('div');
+    d.className = cls;
+    const html = marked.parse(markdown, { async: false, breaks: true, gfm: true });
+    d.innerHTML = DOMPurify.sanitize(html);
+    return d;
+}
+
 function gotBlog(text: string): void {
     let blog: any[];
     try { blog = JSON.parse(text); } catch { return; }
@@ -196,7 +216,7 @@ function gotBlog(text: string): void {
         outer.appendChild(makeDiv('blogRevision'));
         outer.appendChild(makeDiv('blogDate',      String(post.date_posted ?? '')));
         outer.appendChild(makeDiv('blogRevNumber', String(post.title       ?? '')));
-        outer.appendChild(makeDiv('blogRevText',   String(post.post_text   ?? '')));
+        outer.appendChild(makeMarkdownDiv('blogRevText', String(post.post_text ?? '')));
         outer.appendChild(makeDiv('blogSep'));
         blogDiv.appendChild(outer);
     }

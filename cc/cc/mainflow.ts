@@ -21,13 +21,6 @@ export class MainFlow extends ccweb.Flow {
                 </div>
             </div>
 
-            <div id="fbnews">
-                <div class="loadholder">
-                    <span class="loadspinner"></span>
-                    <span class="loadtext">Loading news...</span>
-                </div>
-            </div>
-
         `;
     }
 }

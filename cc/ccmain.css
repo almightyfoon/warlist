@@ -1310,17 +1310,46 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#828c95', end
     left: 26px;
 }
 
-.blogRevNumber::before
-{
-    content: "Build ";
-}
-
 .blogRevText
 {
     font-size: 14pt;
-    line-height: 14pt;
+    line-height: 1.4;
     margin-left: 120px;
     width: 580px;
+}
+
+.blogRevText p,
+.blogRevText ul,
+.blogRevText ol
+{
+    margin: 0 0 8px 0;
+}
+
+.blogRevText ul,
+.blogRevText ol
+{
+    padding-left: 22px;
+}
+
+.blogRevText code
+{
+    font-size: 0.9em;
+    background: rgba(0, 0, 0, 0.08);
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+.blogRevText pre code
+{
+    display: block;
+    padding: 8px;
+    overflow-x: auto;
+}
+
+.blogRevText a
+{
+    color: inherit;
+    text-decoration: underline;
 }
 
 
