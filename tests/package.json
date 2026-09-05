@@ -10,7 +10,7 @@
   "dependencies": {
     "@types/commander": "^2.9.2",
     "@types/node": "^8.0.26",
-    "commander": "^2.11.0",
+    "commander": "^15.0.0",
     "typescript": "^5.8.3"
   },
   "description": ""
