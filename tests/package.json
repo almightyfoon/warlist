@@ -2,15 +2,10 @@
   "name": "tests",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "test": "npx tsc && bash ./test"
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/commander": "^2.9.2",
     "@types/node": "^26.4.1",
-    "commander": "^15.0.0",
     "typescript": "^7.0.2"
   },
   "description": ""
