@@ -110,6 +110,12 @@ function initializeEmblem(): void {
         click: () => showMk4Builder(),
     }).container, userPanel);
 
+    _emblemMenu.insertBefore(new ccweb.Button({
+        text: 'Updates',
+        size: 'mediumfixed',
+        click: () => showBlog(),
+    }).container, userPanel);
+
     const theme = new ccweb.UIElement('themesel');
     const sp = document.createElement('span');
     sp.textContent = 'Theme:';
@@ -160,6 +166,7 @@ function resizeWindow(): void {
 // ---------------------------------------------------------------------------
 
 function showBlog(skipHistory?: boolean): void {
+    closeEmblemDialog();
     quitToMain();
     manageHistory('Updates', 'news', skipHistory);
 
