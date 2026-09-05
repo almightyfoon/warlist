@@ -6,6 +6,14 @@ on:
   pull_request:
     branches: [main]
 
+# Collapses a burst of pushes to the same ref (e.g. merging several dependabot
+# PRs back to back) down to one in-flight run, so a batch merge can't fire off
+# overlapping SSM deploy commands against the same EC2 instance. Scoped per
+# ref, so PRs and other branches never cancel each other.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: warlist
