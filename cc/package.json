@@ -6,7 +6,7 @@
     "typescript": "^7.0.2"
   },
   "devDependencies": {
-    "@types/node": "^26.4.1",
+    "@types/node": "^26.5.0",
     "undici-types": "^8.10.1",
     "vite": "^8.2.2"
   },
